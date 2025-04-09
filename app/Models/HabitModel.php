@@ -46,13 +46,23 @@ class HabitModel extends Model
     /**
      * Sonraki hedef süresini hesaplar
      */
-    public function calculateNextGoal($currentGoal)
+    public function calculateNextGoal($currentGoal, $completionPercentage = 100)
     {
         // Hedef sürelerini kademeli olarak artırma
         $goalProgression = [
             3, 7, 10, 14, 21, 30, 60, 90, 120, 180, 365
         ];
         
+        // Eğer tamamlanma yüzdesi düşükse, hedefi azalt
+        if ($completionPercentage < 50) {
+            // Başarı oranı düşükse, daha kolay bir hedef belirle (mevcut hedefin %20 eksiği)
+            return max(3, ceil($currentGoal * 0.8));
+        } else if ($completionPercentage < 70) {
+            // Orta düzeyde başarı durumunda aynı hedefi koru
+            return $currentGoal;
+        }
+        
+        // Yüksek başarı durumunda bir sonraki hedefi belirle
         foreach ($goalProgression as $days) {
             if ($days > $currentGoal) {
                 return $days;

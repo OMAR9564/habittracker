@@ -35,6 +35,13 @@
                         Kayıt Ekle
                     </a>
                     
+                    <a href="<?= site_url('dashboard/habit/' . $habit['id'] . '/refresh') ?>" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                        Verileri Güncelle
+                    </a>
+                    
                     <a href="<?= site_url('dashboard/habit/' . $habit['id'] . '/delete') ?>" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center transition" onclick="return confirm('Bu alışkanlığı silmek istediğinizden emin misiniz?');">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -46,7 +53,7 @@
             
             <!-- İlerleme Grafiği -->
             <div class="p-6 border-t border-gray-200">
-                <h2 class="text-lg font-semibold mb-4">İlerleme Grafiği (Son 90 Gün)</h2>
+                <h2 class="text-lg font-semibold mb-4">Başarı Puanı Grafiği (Sıfırdan Başlayan)</h2>
                 <canvas id="progressChart" height="200"></canvas>
             </div>
         </div>
@@ -109,11 +116,69 @@
                 
                 <?php 
                 $startDate = new DateTime($activeGoal['start_date']);
-                $today = new DateTime();
-                $daysPassed = $startDate->diff($today)->days;
+                $today = new DateTime(date('Y-m-d')); // Bugünün tarihini alıyoruz, saat bilgisi olmadan
+                
+                // Son günlüğü kontrol et
+                $logAfterStart = false;
+                $lastLogDate = null;
+                
+                if (!empty($logs)) {
+                    // Başlangıç tarihinden sonraki tüm logları kontrol et
+                    foreach ($logs as $log) {
+                        $logDate = new DateTime($log['date']);
+                        if ($logDate >= $startDate) {
+                            $logAfterStart = true;
+                            $lastLogDate = $logDate;
+                            break;
+                        }
+                    }
+                    
+                    // Eğer başlangıç tarihinden sonra bir log varsa ve bugünün tarihi değilse sorun var demektir
+                    if ($logAfterStart && $lastLogDate->format('Y-m-d') != $today->format('Y-m-d')) {
+                ?>
+                        <div class="bg-red-100 text-red-800 p-3 rounded-lg mb-4">
+                            <p class="font-semibold">Dikkat! Veriler güncel değil.</p>
+                            <p class="text-sm">En son <?= $lastLogDate->format('d/m/Y') ?> tarihinde alışkanlık kaydı eklediniz fakat hedef süresi ve geçen gün sayısı güncel değil. 
+                            <a href="<?= site_url('dashboard/habit/' . $habit['id'] . '/refresh') ?>" class="underline font-semibold">Verileri güncelle</a> butonuna tıklayarak güncel bilgileri görebilirsiniz.</p>
+                        </div>
+                <?php
+                    }
+                }
+                
+                // Geçen gün sayısını hesapla - startDate ile today arasındaki fark
+                $interval = $startDate->diff($today);
+                $daysPassed = $interval->days;
                 $goalDays = $activeGoal['goal_days'];
+                
+                // Eğer startDate bugünden sonra ise (geçersiz durum) geçen süreyi 0 yap
+                if ($startDate > $today) {
+                    $daysPassed = 0;
+                }
+                
+                // Hedef tamamlandı mı?
+                $goalCompleted = $daysPassed >= $goalDays;
+                
                 $progress = min(100, ($daysPassed / $goalDays) * 100);
                 $daysLeft = max(0, $goalDays - $daysPassed);
+                
+                // Eğer hedef tamamlandıysa otomatik olarak hedefi tamamla
+                if ($goalCompleted) {
+                    echo '<script>
+                        // Sayfa yüklendiğinde hedef tamamlandıysa, otomatik olarak güncelleme yapalım
+                        document.addEventListener("DOMContentLoaded", function() {
+                            // Eğer daha önce bu hedef için otomatik güncelleme yapılmadıysa
+                            if (!localStorage.getItem("autoUpdatedGoal_' . $habit["id"] . '_' . $activeGoal["id"] . '")) {
+                                // Kullanıcıya bildirim göster
+                                if (confirm("Tebrikler! ' . $goalDays . ' günlük hedefinizi tamamladınız. Yeni hedefe geçmek ister misiniz?")) {
+                                    // Local storage\'a bu hedefin güncellendiğini kaydet
+                                    localStorage.setItem("autoUpdatedGoal_' . $habit["id"] . '_' . $activeGoal["id"] . '", "true");
+                                    // Verileri güncelle sayfasına yönlendir
+                                    window.location.href = "' . site_url('dashboard/habit/' . $habit['id'] . '/refresh') . '";
+                                }
+                            }
+                        });
+                    </script>';
+                }
                 ?>
                 
                 <div class="mb-2">
@@ -145,10 +210,15 @@
                     </li>
                 </ul>
                 
+                <div class="mt-4 bg-yellow-100 text-yellow-800 p-3 rounded-lg text-sm">
+                    <p class="font-semibold">Dikkat!</p>
+                    <p>Alışkanlığı yapmak ve kaydetmek (günlük eklemek) hedef sürenizi azaltacak ve ilerlemeyi sıfırlayacaktır. Ne kadar az yaparsanız, o kadar başarılı olursunuz!</p>
+                </div>
+                
                 <?php if ($daysLeft == 0): ?>
                     <div class="mt-4 bg-green-100 text-green-800 p-3 rounded-lg text-sm">
                         <p class="font-semibold">Tebrikler!</p>
-                        <p>Hedef süreyi tamamladınız. Yeni bir alışkanlık kaydı ekleyerek bir sonraki hedefe geçebilirsiniz.</p>
+                        <p>Hedef süreyi tamamladınız. Yeni bir hedefe geçmek için <a href="<?= site_url('dashboard/habit/' . $habit['id'] . '/refresh') ?>" class="font-bold underline">Verileri Güncelle</a> butonuna tıklayabilirsiniz.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -260,10 +330,10 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Alışkanlık Kaydı',
+                label: 'Başarı Puanı',
                 data: data,
-                borderColor: 'rgba(124, 58, 237, 1)',
-                backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                borderColor: 'rgba(16, 185, 129, 1)', // Yeşil ton
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 tension: 0.4,
                 fill: true
             }]
@@ -272,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             responsive: true,
             plugins: {
                 legend: {
-                    display: false
+                    display: true
                 },
                 tooltip: {
                     callbacks: {
@@ -280,6 +350,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Tarihi daha okunabilir formata dönüştür
                             const date = new Date(tooltipItems[0].label);
                             return date.toLocaleDateString('tr-TR');
+                        },
+                        label: function(context) {
+                            return `Başarı Puanı: ${context.raw}`;
                         }
                     }
                 }
@@ -300,10 +373,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 y: {
                     beginAtZero: true,
-                    suggestedMax: 5,
+                    suggestedMax: 100,
+                    suggestedMin: 0,
+                    min: 0,
                     ticks: {
                         precision: 0,
-                        stepSize: 1
+                        stepSize: 10
                     }
                 }
             }

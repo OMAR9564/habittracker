@@ -92,7 +92,10 @@ class GoalHistoryModel extends Model
             'completion_percentage' => $percentage
         ];
         
-        return $this->update($activeGoal['id'], $data);
+        $this->update($activeGoal['id'], $data);
+        
+        // Başarı yüzdesini döndür
+        return $percentage;
     }
     
     /**
@@ -124,5 +127,44 @@ class GoalHistoryModel extends Model
         }
         
         return $totalPercentage / count($goals);
+    }
+
+    /**
+     * Aktif hedefi sıfırlar ve süreyi günceller
+     * Kötü alışkanlık yapıldığında kullanılır
+     */
+    public function resetActiveGoal($habitId, $newGoalDays)
+    {
+        $activeGoal = $this->getActiveGoal($habitId);
+        
+        if (!$activeGoal) {
+            // Aktif hedef yoksa yeni oluştur
+            return $this->startNewGoal($habitId, $newGoalDays);
+        }
+        
+        // Mevcut hedefi tamamla (başarısız olarak)
+        $this->completeActiveGoal($habitId, false);
+        
+        // Bugünün tarihini al
+        $today = date('Y-m-d');
+        
+        // Yeni hedef oluştur (güncellenmiş süre ile)
+        $data = [
+            'habit_id' => $habitId,
+            'goal_days' => $newGoalDays,
+            'start_date' => $today, // Bugünü başlangıç olarak ayarla
+            'is_completed' => false,
+            'completion_percentage' => 0.00
+        ];
+        
+        // Eski hedefi güncelle
+        $this->db->table('habits')
+                 ->where('id', $habitId)
+                 ->update([
+                     'current_goal' => $newGoalDays,
+                     'current_goal_start_date' => $today
+                 ]);
+        
+        return $this->insert($data);
     }
 } 

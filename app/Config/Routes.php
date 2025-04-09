@@ -49,6 +49,7 @@ $routes->group('dashboard', function ($routes) {
     $routes->get('habit/(:num)/log', 'Dashboard::logHabit/$1');
     $routes->post('habit/(:num)/log', 'Dashboard::logHabit/$1');
     $routes->get('habit/(:num)/delete', 'Dashboard::deleteHabit/$1');
+    $routes->get('habit/(:num)/refresh', 'Dashboard::refreshHabitData/$1');
 });
 
 /*

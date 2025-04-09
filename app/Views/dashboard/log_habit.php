@@ -29,8 +29,16 @@
             <h3 class="font-bold text-yellow-800 mb-2">Önemli Bilgi</h3>
             <p class="text-sm text-yellow-800">
                 Her alışkanlık kaydı, seviyenizi bir miktar düşürür ve başarı yüzdenizi etkiler. 
-                Bu, alışkanlığı bırakma sürecinde ilerlemek için doğal bir mekanizmadır. 
-                Endişelenmeyin, hedefinizi tamamladığınızda seviyeniz önemli miktarda artacaktır!
+                Bu, alışkanlığı bırakma sürecinde ilerlemek için doğal bir mekanizmadır.
+            </p>
+        </div>
+        
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
+            <h3 class="font-bold text-red-800 mb-2">Dikkat: Hedef Etkilenecek!</h3>
+            <p class="text-sm text-red-800">
+                <strong>Bu kaydı eklemek hedef sürenizi 1 gün azaltacak ve ilerlemenizi sıfırlayacaktır.</strong>
+                Kötü alışkanlığı her yaptığınızda, hedef süreniz kısalır ve baştan başlarsınız.
+                Hedefi başarıyla tamamlamak için bu alışkanlığı yapmaktan kaçınmalısınız.
             </p>
         </div>
         
@@ -88,8 +96,9 @@
     <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
         <h3 class="font-bold text-blue-800 mb-2">İpucu</h3>
         <p class="text-sm text-blue-800">
-            Sadece alışkanlığı yaptığınız günleri kaydedin. Yapmadığınız günler için kayıt eklemenize gerek yok.
-            Sistemdeki "Alışkanlık Kaydı", aslında kaçındığınız günlerin takibi için değil, alışkanlığı yaptığınız günleri izlemek içindir.
+            Bu alışkanlığı bırakmaya çalışıyorsunuz - bu yüzden <strong>sadece alışkanlığı yaptığınız günleri kaydetmelisiniz</strong>.
+            Yapmadığınız (başarılı olduğunuz) günler otomatik olarak takip edilir. Ne kadar az kayıt eklerseniz, o kadar başarılı olursunuz!
+            Hedefinizi tamamlamak için alışkanlığı yapmaktan kaçının ve hedef süresi kadar gün dayanın.
         </p>
     </div>
 </div>
