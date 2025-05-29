@@ -88,5 +88,5 @@ class Autoload extends AutoloadConfig
      *       'form',
      *   ];
      */
-    public array $helpers = ['OmarHelper'];
+    public array $helpers = ['omar_helper'];
 }
