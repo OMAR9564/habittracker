@@ -68,6 +68,23 @@ class HabitLogModel extends Model
     }
     
     /**
+     * NOTE: Get logs by date range - Omar BYA method
+     * 
+     * @param int $habitId
+     * @param string $startDate
+     * @param string $endDate
+     * @return array
+     */
+    public function getLogsByDateRange($habitId, $startDate, $endDate)
+    {
+        return $this->where('habit_id', $habitId)
+                   ->where('date >=', $startDate)
+                   ->where('date <=', $endDate)
+                   ->orderBy('date', 'DESC')
+                   ->findAll();
+    }
+    
+    /**
      * Belirli bir tarih aralığı içindeki başarı yüzdesini hesaplar
      */
     public function calculateSuccessPercentage($habitId, $startDate, $endDate)

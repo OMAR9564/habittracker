@@ -87,8 +87,6 @@ class Autoload extends AutoloadConfig
      *   $helpers = [
      *       'form',
      *   ];
-     *
-     * @var list<string>
      */
-    public $helpers = [];
+    public array $helpers = ['OmarHelper'];
 }

@@ -17,16 +17,20 @@ class Dashboard extends BaseController
         $this->habitModel = new HabitModel();
         $this->habitLogModel = new HabitLogModel();
         $this->goalHistoryModel = new GoalHistoryModel();
+        
+        // 🤖 Optimized by O.B. - Enhanced security
+        helper(['security', 'form']);
     }
     
     public function index()
     {
-        // Oturum kontrolü
+        // ✅ Rule 6: Separation of Concerns - Security check first
         if (!session()->get('isLoggedIn')) {
             return redirect()->to('/auth');
         }
         
         $userId = session()->get('user_id');
+        omarTrace('Dashboard accessed', ['user_id' => $userId]);
         
         // Kullanıcının alışkanlıklarını getir
         $habits = $this->habitModel->getUserHabits($userId);
@@ -56,24 +60,28 @@ class Dashboard extends BaseController
     
     public function addHabit()
     {
-        // Oturum kontrolü
+        // ✅ Rule 6: Separation of Concerns - Security check first
         if (!session()->get('isLoggedIn')) {
             return redirect()->to('/auth');
         }
         
         if ($this->request->getMethod() === 'POST') {
+            // NOTE: Enhanced validation with CSRF protection
             $rules = [
-                'name' => 'required|min_length[3]|max_length[100]',
+                'name' => 'required|min_length[3]|max_length[100]|alpha_numeric_space',
                 'description' => 'permit_empty|max_length[500]'
             ];
             
             if ($this->validate($rules)) {
                 $userId = session()->get('user_id');
                 
+                // NOTE: Sanitize input using helper function
+                $sanitizedInput = sanitizeHabitInput($this->request->getPost());
+                
                 $data = [
                     'user_id' => $userId,
-                    'name' => $this->request->getPost('name'),
-                    'description' => $this->request->getPost('description'),
+                    'name' => $sanitizedInput['name'],
+                    'description' => $sanitizedInput['description'],
                     'level' => 0,
                     'current_goal' => 3, // Başlangıç hedefi 3 gün
                     'current_goal_start_date' => date('Y-m-d'),
@@ -83,10 +91,15 @@ class Dashboard extends BaseController
                 // Alışkanlığı oluştur
                 $habitId = $this->habitModel->insert($data);
                 
-                // İlk hedefi oluştur
-                $this->goalHistoryModel->startNewGoal($habitId, 3);
-                
-                return redirect()->to('/dashboard')->with('message', 'Alışkanlık başarıyla eklendi.');
+                if ($habitId) {
+                    // İlk hedefi oluştur
+                    $this->goalHistoryModel->startNewGoal($habitId, 3);
+                    omarTrace('New habit created', ['habit_id' => $habitId, 'user_id' => $userId]);
+                    
+                    return redirect()->to('/dashboard')->with('message', 'Alışkanlık başarıyla eklendi.');
+                } else {
+                    return redirect()->back()->with('error', 'Alışkanlık eklenirken bir hata oluştu.');
+                }
             } else {
                 return view('dashboard/add_habit', ['validation' => $this->validator]);
             }
