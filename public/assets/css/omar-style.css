@@ -1,289 +1,352 @@
-/* 🧠 Omar BYA - Personal Style Sheet */
-/* Code aligned with Omar BYA's Personal Style Sheet */
+/* 🧠 Omar BYA - Revolutionary Dashboard Design v3.0 */
+/* 🤖 Optimized by O.B. - Complete redesign for modern experience */
 
 :root {
-  --primary-color: #7c3aed;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --danger-color: #ef4444;
-  --dark-color: #1f2937;
-  --light-color: #f9fafb;
+  /* New Modern Color Palette */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #8b5cf6;
+  --accent: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --dark: #1e293b;
+  --darker: #0f172a;
+  --light: #f8fafc;
+  --glass: rgba(255, 255, 255, 0.1);
+  --shadow: rgba(0, 0, 0, 0.1);
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: rgba(148, 163, 184, 0.2);
 }
 
-/* ✅ Rule 4: Personal Touch - Omar's Custom Components */
-.omar-card {
-  @apply bg-white rounded-lg shadow-md p-6 mb-4;
-  transition: all 0.3s ease;
+/* Global Styles */
+* {
+  box-sizing: border-box;
 }
 
-.omar-card:hover {
-  @apply shadow-lg;
-  transform: translateY(-2px);
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: var(--text-primary);
 }
 
-.omar-btn-primary {
-  @apply bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition;
+/* Glass Container */
+.glass-container {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-.omar-progress-bar {
-  @apply w-full bg-gray-200 rounded-full h-3;
+/* Modern Dashboard Header */
+.dashboard-header {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-title {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 3rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-subtitle {
+  text-align: center;
+  color: rgba(30, 41, 59, 0.7);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Modern Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.1)
+  );
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
   overflow: hidden;
 }
 
-.omar-progress-fill {
-  height: 100%;
-  transition: width 0.5s ease-in-out;
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
-/* 🎯 Habit Level Indicator */
-.level-badge {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.2)
+  );
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
 }
 
-/* 📊 Success Rate Colors */
-.success-high {
-  background-color: var(--success-color);
-}
-
-.success-medium {
-  background-color: var(--warning-color);
-}
-
-.success-low {
-  background-color: var(--danger-color);
-}
-
-/* 🔄 Animation Classes */
-.fade-in {
-  animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 📱 Mobile Optimizations */
-@media (max-width: 768px) {
-  .omar-card {
-    @apply p-4 mx-2;
-  }
-
-  .habit-grid {
-    @apply grid-cols-1;
-  }
-}
-
-/* 🌙 Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .omar-card {
-    @apply bg-gray-800 text-white;
-  }
-}
-
-/* NOTE: Custom styling aligned with Omar BYA standards */
-
-/* 📊 Charts Improvements - Issue #2 Solution */
-.charts-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  padding: 1rem 0;
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary-color) transparent;
-}
-
-.charts-container::-webkit-scrollbar {
-  height: 6px;
-}
-
-.charts-container::-webkit-scrollbar-track {
-  background: rgba(124, 58, 237, 0.1);
-  border-radius: 3px;
-}
-
-.charts-container::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 3px;
-}
-
-.chart-item {
-  display: inline-block;
-  min-width: 300px;
-  max-width: 400px;
-  margin-right: 1rem;
-  vertical-align: top;
-  white-space: normal;
-}
-
-.chart-wrapper {
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: 200px;
-  position: relative;
-}
-
-/* 🎯 Streak Display Components */
-.streak-badge {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.streak-excellent {
-  background: linear-gradient(135deg, #059669, #047857);
-}
-
-.streak-good {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.streak-starting {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-}
-
-.streak-none {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
-}
-
-.streak-counter {
-  @apply text-2xl font-bold;
-  background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* 🔢 Counter Fix - Issue #3 Solution */
-.stats-card {
-  @apply bg-white rounded-lg shadow-md p-6 mb-4;
-  transition: all 0.3s ease;
-  border-left: 4px solid var(--primary-color);
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.stats-card:hover {
-  @apply shadow-lg;
-  transform: translateY(-2px);
+/* Revolutionary Habit Cards */
+.habits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
 }
 
-.stats-value {
-  @apply text-3xl font-bold mb-2;
-  color: var(--primary-color);
-}
-
-.stats-label {
-  @apply text-sm text-gray-600 uppercase tracking-wide;
-}
-
-/* 📱 Mobile Responsive Charts */
-@media (max-width: 768px) {
-  .charts-container {
-    padding: 0.5rem 0;
-  }
-
-  .chart-item {
-    min-width: 280px;
-    max-width: 320px;
-    margin-right: 0.5rem;
-  }
-
-  .chart-wrapper {
-    height: 180px;
-    padding: 0.75rem;
-  }
-
-  .streak-badge {
-    @apply px-2 py-1 text-xs;
-  }
-}
-
-/* 🎮 Hover Effects */
-.habit-card:hover .streak-badge {
-  transform: scale(1.05);
-  transition: transform 0.2s ease;
-}
-
-.chart-wrapper:hover {
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
-  transition: box-shadow 0.3s ease;
-}
-
-/* ✨ Loading States */
-.chart-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--primary-color);
-  font-size: 0.875rem;
-}
-
-.chart-loading::after {
-  content: "";
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--primary-color);
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-left: 0.5rem;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* 🎯 Habit Card Enhancements */
 .habit-card {
-  @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300;
-  border-left: 4px solid transparent;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.15)
+  );
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
-.habit-card:hover {
-  @apply shadow-xl;
-  transform: translateY(-4px);
-  border-left-color: var(--primary-color);
-}
-
-.habit-progress {
-  transition: width 0.8s ease-in-out;
-  border-radius: 4px;
-}
-
-/* 🔄 Enhanced Progress Animation */
-.habit-progress::after {
+.habit-card::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 0;
   right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.1),
+    rgba(139, 92, 246, 0.1)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.habit-card:hover::before {
+  opacity: 1;
+}
+
+.habit-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+}
+
+.habit-header {
+  padding: 2rem 2rem 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.habit-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.habit-level {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Advanced Streak Display */
+.streak-section {
+  padding: 0 2rem 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.streak-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.streak-current {
+  text-align: center;
+}
+
+.streak-current-value {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--success), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.streak-current-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.streak-max {
+  text-align: center;
+}
+
+.streak-max-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--warning);
+}
+
+/* Modern Progress Bar */
+.progress-section {
+  padding: 1rem 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.progress-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
+  border-radius: 10px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(
     90deg,
     transparent,
     rgba(255, 255, 255, 0.4),
     transparent
   );
-  animation: progress-shine 2s infinite;
+  animation: shimmer 2s infinite;
 }
 
-@keyframes progress-shine {
+@keyframes shimmer {
   0% {
     transform: translateX(-100%);
   }
@@ -292,99 +355,175 @@
   }
 }
 
-/* 📱 Better Mobile Experience */
-@media (max-width: 768px) {
-  .habit-card {
-    @apply mx-2 mb-4;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-  }
-
-  .stats-card {
-    @apply mb-3;
-    padding: 1rem;
-  }
-
-  .stats-value {
-    @apply text-2xl;
-  }
-
-  .charts-container {
-    padding: 0.5rem;
-  }
-
-  .chart-item {
-    min-width: 260px;
-    max-width: 300px;
-  }
-}
-
-/* 🎨 Enhanced Hover Effects */
-.habit-card .streak-badge {
-  transition: all 0.3s ease;
-}
-
-.habit-card:hover .streak-badge {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.chart-wrapper:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
-
-/* 🔄 Loading Animation for Charts */
-.chart-loading {
+/* Action Buttons */
+.habit-actions {
+  padding: 1rem 2rem 2rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-  border-radius: 8px;
+  gap: 1rem;
+  position: relative;
+  z-index: 2;
 }
 
-.chart-loading::after {
-  content: "📊";
-  font-size: 2rem;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 🎯 Improved Streak Badges */
-.streak-badge {
+.btn-modern {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
 }
 
-.streak-badge:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
 }
 
-/* 📊 Better Chart Container */
-.charts-container {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border-radius: 12px;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--accent), var(--success));
+  color: white;
+  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(6, 182, 212, 0.4);
+}
+
+/* Chart Section */
+.chart-section {
+  padding: 1rem 2rem 2rem;
+  position: relative;
+  z-index: 2;
+  display: block !important; /* 🔧 Always visible */
+  opacity: 1;
+  visibility: visible;
+}
+
+.chart-container {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
   padding: 1rem;
-  margin: 1rem 0;
+  backdrop-filter: blur(5px);
+  height: 150px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* 🌟 Modern Button Styles */
-.omar-btn-primary {
+/* 🔧 Enhanced scrollable charts */
+.chart-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chart-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.chart-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 10px;
+}
+
+.chart-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, var(--primary-dark), var(--secondary));
+}
+
+/* Chart canvas optimization */
+.chart-container canvas {
+  min-width: 300px !important;
+  height: 100% !important;
+}
+
+/* 🤖 Optimized by O.B. - Chart visibility fixes */
+.habit-card .chart-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 1rem;
+}
+
+.chart-section h3 {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.1)
+  );
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.empty-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.empty-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Add Button */
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
   position: relative;
   overflow: hidden;
 }
 
-.omar-btn-primary::before {
+.add-button::before {
   content: "";
   position: absolute;
   top: 0;
@@ -400,14 +539,87 @@
   transition: left 0.5s;
 }
 
-.omar-btn-primary:hover::before {
+.add-button:hover::before {
   left: 100%;
 }
 
-/* 💾 Responsive Grid Fixes */
-@media (max-width: 640px) {
-  .grid {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
+.add-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .habits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+
+  .habit-actions {
+    flex-direction: column;
+  }
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.8s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Pulse Animation for Stats */
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
   }
 }

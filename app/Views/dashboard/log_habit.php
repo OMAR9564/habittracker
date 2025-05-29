@@ -2,104 +2,132 @@
 
 <?= $this->section('content') ?>
 
-<div class="max-w-2xl mx-auto">
-    <div class="flex items-center mb-6">
-        <a href="<?= site_url('dashboard/habit/' . $habit['id']) ?>" class="text-purple-600 hover:text-purple-800 mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-            </svg>
-        </a>
-        <h1 class="text-2xl font-bold"><?= esc($habit['name']) ?> - Kayıt Ekle</h1>
-    </div>
-    
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="mb-6">
-            <div class="flex items-center space-x-3">
-                <span class="text-sm font-medium bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Seviye <?= $habit['level'] ?></span>
-                <span class="text-sm font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Hedef: <?= $habit['current_goal'] ?> gün</span>
-                <span class="text-sm font-medium bg-<?= $habit['success_percentage'] >= 70 ? 'green' : ($habit['success_percentage'] >= 40 ? 'yellow' : 'red') ?>-100 text-<?= $habit['success_percentage'] >= 70 ? 'green' : ($habit['success_percentage'] >= 40 ? 'yellow' : 'red') ?>-800 px-2 py-1 rounded-full">Başarı: <?= number_format($habit['success_percentage'], 1) ?>%</span>
+<div class="max-w-2xl mx-auto p-6">
+    <div class="glass-container p-8 mb-8 fade-in">
+        <div class="flex items-center mb-8">
+            <a href="<?= site_url('dashboard/habit/' . $habit['id']) ?>" class="btn-modern btn-secondary mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Back
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Log Entry</h1>
+                <p class="text-gray-300 mt-1">Record when you performed: <span class="text-cyan-400 font-semibold"><?= esc($habit['name']) ?></span></p>
             </div>
-            
-            <?php if (!empty($habit['description'])): ?>
-                <p class="text-gray-600 text-sm mt-3"><?= esc($habit['description']) ?></p>
-            <?php endif; ?>
         </div>
         
-        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg mb-6">
-            <h3 class="font-bold text-yellow-800 mb-2">Önemli Bilgi</h3>
-            <p class="text-sm text-yellow-800">
-                Her alışkanlık kaydı, seviyenizi bir miktar düşürür ve başarı yüzdenizi etkiler. 
-                Bu, alışkanlığı bırakma sürecinde ilerlemek için doğal bir mekanizmadır.
-            </p>
-        </div>
-        
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-6">
-            <h3 class="font-bold text-red-800 mb-2">Dikkat: Hedef Etkilenecek!</h3>
-            <p class="text-sm text-red-800">
-                <strong>Bu kaydı eklemek hedef sürenizi 1 gün azaltacak ve ilerlemenizi sıfırlayacaktır.</strong>
-                Kötü alışkanlığı her yaptığınızda, hedef süreniz kısalır ve baştan başlarsınız.
-                Hedefi başarıyla tamamlamak için bu alışkanlığı yapmaktan kaçınmalısınız.
-            </p>
-        </div>
-        
-        <form action="<?= site_url('dashboard/habit/' . $habit['id'] . '/log') ?>" method="post">
+        <form action="<?= site_url('dashboard/habit/' . $habit['id'] . '/log') ?>" method="post" class="space-y-6">
             <?= csrf_field() ?>
             
-            <div class="mb-4">
-                <label for="date" class="block text-gray-700 font-medium mb-2">Tarih</label>
+            <div>
+                <label for="date" class="block text-white font-medium mb-3">Date</label>
                 <input type="date" name="date" id="date" 
-                       class="w-full border <?= (isset($validation) && $validation->hasError('date')) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                       class="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all <?= (isset($validation) && $validation->hasError('date')) ? '!border-red-400' : '' ?>"
                        value="<?= old('date') ?? date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required>
                 
                 <?php if (isset($validation) && $validation->hasError('date')): ?>
-                    <p class="mt-1 text-sm text-red-500"><?= $validation->getError('date') ?></p>
+                    <p class="mt-2 text-sm text-red-400"><?= $validation->getError('date') ?></p>
                 <?php else: ?>
-                    <p class="mt-1 text-sm text-gray-500">Alışkanlığı yaptığınız tarihi seçin.</p>
+                    <p class="mt-2 text-sm text-gray-300">Select the date when you performed this habit.</p>
                 <?php endif; ?>
             </div>
             
-            <div class="mb-4">
-                <label for="count" class="block text-gray-700 font-medium mb-2">Sayı (Kaç kez yaptınız?)</label>
+            <div>
+                <label for="count" class="block text-white font-medium mb-3">Count (How many times?)</label>
                 <input type="number" name="count" id="count" 
-                       class="w-full border <?= (isset($validation) && $validation->hasError('count')) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                       value="<?= old('count') ?? 1 ?>" min="1" max="100" required>
+                       class="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl py-3 px-4 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all <?= (isset($validation) && $validation->hasError('count')) ? '!border-red-400' : '' ?>"
+                       value="<?= old('count') ?? 1 ?>" min="1" max="100" placeholder="1" required>
                 
                 <?php if (isset($validation) && $validation->hasError('count')): ?>
-                    <p class="mt-1 text-sm text-red-500"><?= $validation->getError('count') ?></p>
+                    <p class="mt-2 text-sm text-red-400"><?= $validation->getError('count') ?></p>
                 <?php else: ?>
-                    <p class="mt-1 text-sm text-gray-500">Seçtiğiniz günde alışkanlığı kaç kez yaptığınızı belirtin.</p>
+                    <p class="mt-2 text-sm text-gray-300">Specify how many times you performed the habit on the selected date.</p>
                 <?php endif; ?>
             </div>
             
-            <div class="mb-6">
-                <label for="notes" class="block text-gray-700 font-medium mb-2">Notlar (İsteğe Bağlı)</label>
+            <div>
+                <label for="notes" class="block text-white font-medium mb-3">Notes (Optional)</label>
                 <textarea name="notes" id="notes" rows="3"
-                          class="w-full border <?= (isset($validation) && $validation->hasError('notes')) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                          placeholder="Bu kayıtla ilgili notlarınız..."><?= old('notes') ?></textarea>
+                          class="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl py-3 px-4 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none <?= (isset($validation) && $validation->hasError('notes')) ? '!border-red-400' : '' ?>"
+                          placeholder="Any notes about this entry..."><?= old('notes') ?></textarea>
                 
                 <?php if (isset($validation) && $validation->hasError('notes')): ?>
-                    <p class="mt-1 text-sm text-red-500"><?= $validation->getError('notes') ?></p>
+                    <p class="mt-2 text-sm text-red-400"><?= $validation->getError('notes') ?></p>
                 <?php endif; ?>
             </div>
             
-            <div class="flex justify-between">
-                <a href="<?= site_url('dashboard/habit/' . $habit['id']) ?>" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition">
-                    İptal
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="<?= site_url('dashboard/habit/' . $habit['id']) ?>" class="btn-modern btn-secondary flex-1 py-3 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
                 </a>
-                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition">
-                    Kayıt Ekle
+                <button type="submit" class="add-button flex-1 py-3 text-lg font-semibold">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add Entry
                 </button>
             </div>
         </form>
     </div>
     
-    <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
-        <h3 class="font-bold text-blue-800 mb-2">İpucu</h3>
-        <p class="text-sm text-blue-800">
-            Bu alışkanlığı bırakmaya çalışıyorsunuz - bu yüzden <strong>sadece alışkanlığı yaptığınız günleri kaydetmelisiniz</strong>.
-            Yapmadığınız (başarılı olduğunuz) günler otomatik olarak takip edilir. Ne kadar az kayıt eklerseniz, o kadar başarılı olursunuz!
-            Hedefinizi tamamlamak için alışkanlığı yapmaktan kaçının ve hedef süresi kadar gün dayanın.
-        </p>
+    <!-- Warning Sections -->
+    <div class="space-y-4">
+        <div class="glass-container p-6 fade-in" style="animation-delay: 0.2s;">
+            <div class="flex items-start space-x-4">
+                <div class="stat-icon bg-gradient-to-br from-yellow-400 to-yellow-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Important Information</h3>
+                    <p class="text-gray-300">
+                        Each habit log entry will slightly decrease your level and affect your success rate. 
+                        This is a natural mechanism for progressing in the habit-breaking process.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-container p-6 fade-in" style="animation-delay: 0.4s;">
+            <div class="flex items-start space-x-4">
+                <div class="stat-icon bg-gradient-to-br from-red-400 to-red-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Attention: Goal Will Be Affected!</h3>
+                    <p class="text-gray-300">
+                        <strong>Adding this entry will reduce your goal duration by 1 day and reset your progress.</strong>
+                        Every time you perform the bad habit, your goal duration shortens and you start over.
+                        To successfully complete the goal, you must avoid this habit.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-container p-6 fade-in" style="animation-delay: 0.6s;">
+            <div class="flex items-start space-x-4">
+                <div class="stat-icon bg-gradient-to-br from-blue-400 to-blue-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-2">💡 Pro Tip</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        You're trying to break this habit - so you should <strong>only log the days you performed the habit</strong>.
+                        Days you didn't perform it (successful days) are tracked automatically. The fewer entries you add, the more successful you are!
+                        To complete your goal, avoid the habit and endure for the goal duration.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

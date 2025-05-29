@@ -9,8 +9,9 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use CodeIgniter\Controller;
 
-class Auth extends BaseController
+class Auth extends Controller
 {
     protected $userModel;
     
@@ -26,45 +27,43 @@ class Auth extends BaseController
             return redirect()->to('/dashboard');
         }
         
-        return view('auth/login');
+        return view('auth/login', ['title' => 'Sign In - Habit Tracker']);
     }
     
     public function login()
     {
-        $username = $this->request->getPost('username');
-        $pin = $this->request->getPost('pin');
-        
-        // Giriş denemelerini kontrol et
-        $failedAttempts = $this->userModel->checkFailedAttempts($username);
-        
-        if ($failedAttempts >= 3) {
-            return redirect()->back()->with('error', 'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.');
+        if ($this->request->getMethod() === 'POST') {
+            $username = $this->request->getPost('username');
+            $pin = $this->request->getPost('pin');
+            
+            // Throttle check
+            if ($this->userModel->isThrottled($username)) {
+                return redirect()->back()->with('error', 'Too many failed attempts. Please try again later.');
+            }
+            
+            $user = $this->userModel->getUserByCredentials($username, $pin);
+            
+            if ($user) {
+                // Clear failed attempts
+                $this->userModel->clearFailedAttempts($username);
+                
+                // Set session
+                session()->set([
+                    'user_id' => $user['id'],
+                    'username' => $user['username'],
+                    'isLoggedIn' => true
+                ]);
+                
+                return redirect()->to('/dashboard')->with('success', 'Successfully signed in! Welcome back.');
+            } else {
+                // Record failed attempt
+                $this->userModel->recordFailedAttempt($username);
+                
+                return redirect()->back()->with('error', 'Invalid username or PIN.');
+            }
         }
         
-        // Kullanıcı adı ve PIN kontrolü
-        if ($this->userModel->verifyPin($username, $pin)) {
-            // Başarılı giriş, kullanıcı bilgilerini al
-            $user = $this->userModel->where('username', $username)->first();
-            
-            // Oturum bilgilerini ayarla
-            $sessionData = [
-                'user_id' => $user['id'],
-                'username' => $user['username'],
-                'isLoggedIn' => true
-            ];
-            
-            session()->set($sessionData);
-            
-            // Başarısız deneme sayacını sıfırla
-            $this->userModel->resetFailedAttempts($username);
-            
-            return redirect()->to('/dashboard');
-        } else {
-            // Başarısız denemeyi kaydet
-            $this->userModel->recordFailedAttempt($username);
-            
-            return redirect()->back()->with('error', 'Geçersiz kullanıcı adı veya PIN.');
-        }
+        return $this->index();
     }
     
     public function register()
@@ -75,77 +74,59 @@ class Auth extends BaseController
                 'username' => [
                     'rules' => 'required|min_length[3]|max_length[30]|alpha_numeric_space|is_unique[users.username]',
                     'errors' => [
-                        'required' => 'Kullanıcı adı alanı zorunludur.',
-                        'min_length' => 'Kullanıcı adı en az {param} karakter olmalıdır.',
-                        'max_length' => 'Kullanıcı adı en fazla {param} karakter olabilir.',
-                        'alpha_numeric_space' => 'Kullanıcı adı sadece harf, rakam ve boşluk içerebilir.',
-                        'is_unique' => 'Bu kullanıcı adı zaten kullanımda. Lütfen başka bir kullanıcı adı seçin.'
+                        'required' => 'Username field is required.',
+                        'min_length' => 'Username must be at least {param} characters long.',
+                        'max_length' => 'Username cannot exceed {param} characters.',
+                        'alpha_numeric_space' => 'Username can only contain letters, numbers and spaces.',
+                        'is_unique' => 'This username is already taken. Please choose a different username.'
                     ]
                 ],
                 'pin' => [
                     'rules' => 'required|min_length[3]|max_length[8]|numeric',
                     'errors' => [
-                        'required' => 'PIN kodu alanı zorunludur.',
-                        'min_length' => 'PIN kodu en az {param} haneli olmalıdır.',
-                        'max_length' => 'PIN kodu en fazla {param} haneli olabilir.',
-                        'numeric' => 'PIN kodu sadece rakamlardan oluşmalıdır.'
+                        'required' => 'PIN code field is required.',
+                        'min_length' => 'PIN code must be at least {param} digits long.',
+                        'max_length' => 'PIN code cannot exceed {param} digits.',
+                        'numeric' => 'PIN code must contain only numbers.'
                     ]
                 ],
                 'confirm_pin' => [
                     'rules' => 'required|matches[pin]',
                     'errors' => [
-                        'required' => 'PIN kodu onayı zorunludur.',
-                        'matches' => 'PIN kodu onayı, PIN kodu ile eşleşmelidir.'
+                        'required' => 'PIN code confirmation is required.',
+                        'matches' => 'PIN code confirmation must match the PIN code.'
                     ]
                 ]
             ];
             
-            if ($this->validate($rules)) {
-                $username = $this->request->getPost('username');
-                $pin = $this->request->getPost('pin');
-                
-                // PIN'i hash'le
-                $pinHash = password_hash($pin, PASSWORD_DEFAULT);
+            if (!$this->validate($rules)) {
+                return view('auth/register', [
+                    'title' => 'Sign Up - Habit Tracker',
+                    'validation' => $this->validator
+                ]);
+            }
 
-                
-                // Yeni kullanıcı oluştur
-                $data = [
-                    'username' => $username,
-                    'pin_hash' => $pinHash,
-                    'failed_attempts' => 0
-                ];
-                
-                try {
-                    // Hata ayıklama için
-                    log_message('debug', 'Kullanıcı kaydı deneniyor: ' . json_encode($data));
-                    
-                    $userId = $this->userModel->insert($data);
-                    
-                    if (!$userId) {
-                        log_message('error', 'Kullanıcı kaydı başarısız: ' . print_r($this->userModel->errors(), true));
-                        return redirect()->back()->with('error', 'Kayıt işlemi sırasında bir hata oluştu.');
-                    }
-                    
-                    log_message('debug', 'Kullanıcı başarıyla kaydedildi. ID: ' . $userId);
-                    
-                    // Başarı mesajı ve giriş sayfasına yönlendirme
-                    return redirect()->to('/auth')->with('message', 'Kayıt başarılı. Lütfen giriş yapın.');
-                } catch (\Exception $e) {
-                    log_message('error', 'Kayıt işlemi istisnası: ' . $e->getMessage());
-                    return redirect()->back()->with('error', 'Sistemde bir hata oluştu: ' . $e->getMessage());
-                }
+            // Create user
+            $userData = [
+                'username' => $this->request->getPost('username'),
+                'pin_hash' => password_hash($this->request->getPost('pin'), PASSWORD_DEFAULT),
+                'failed_attempts' => 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            if ($this->userModel->save($userData)) {
+                return redirect()->to('/auth')->with('success', 'Account created successfully! You can now sign in.');
             } else {
-                // Hataları gösterip formu yeniden yükleme
-                return view('auth/register', ['validation' => $this->validator]);
+                return redirect()->back()->with('error', 'An error occurred while creating the account. Please try again.');
             }
         }
         
-        return view('auth/register');
+        return view('auth/register', ['title' => 'Sign Up - Habit Tracker']);
     }
     
     public function logout()
     {
         session()->destroy();
-        return redirect()->to('/auth');
+        return redirect()->to('/')->with('success', 'Successfully signed out. See you soon!');
     }
 } 

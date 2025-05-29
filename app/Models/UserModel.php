@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * 🧠 Omar BYA - User Model with Enhanced Security
+ * 🤖 Optimized by O.B. - Ultra Flexible Authentication System
+ * Code aligned with Omar BYA's Personal Style Sheet
+ */
+
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -10,10 +16,10 @@ class UserModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'username', 'pin_hash', 'failed_attempts', 'last_attempt_time'
+        'username', 'pin_hash', 'failed_attempts', 'last_attempt_time', 'created_at', 'updated_at'
     ];
 
     // Dates
@@ -21,7 +27,6 @@ class UserModel extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
 
     // Validation
     protected $validationRules      = [
@@ -32,10 +37,14 @@ class UserModel extends Model
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
+    // 🤖 Optimized by O.B. - Security constants
+    private const MAX_FAILED_ATTEMPTS = 3;
+    private const THROTTLE_MINUTES = 15;
+
     /**
-     * Kullanıcı kimlik doğrulama
+     * NOTE: Enhanced user authentication with credentials
      */
-    public function verifyPin($username, $pin)
+    public function getUserByCredentials($username, $pin)
     {
         $user = $this->where('username', $username)->first();
         
@@ -43,25 +52,47 @@ class UserModel extends Model
             return false;
         }
         
-        return password_verify($pin, $user['pin_hash']);
+        // Verify PIN
+        if (password_verify($pin, $user['pin_hash'])) {
+            return $user;
+        }
+        
+        return false;
     }
 
     /**
-     * Başarısız giriş denemelerini kontrol eder
+     * NOTE: Check if user is throttled due to failed attempts
      */
-    public function checkFailedAttempts($username)
+    public function isThrottled($username)
     {
         $user = $this->where('username', $username)->first();
         
         if (!$user) {
-            return 0;
+            return false;
         }
         
-        return $user['failed_attempts'];
+        // Check if user has exceeded max attempts
+        if ($user['failed_attempts'] >= self::MAX_FAILED_ATTEMPTS) {
+            // Check if throttle time has passed
+            if ($user['last_attempt_time']) {
+                $lastAttempt = strtotime($user['last_attempt_time']);
+                $throttleTime = $lastAttempt + (self::THROTTLE_MINUTES * 60);
+                
+                if (time() < $throttleTime) {
+                    return true; // Still throttled
+                } else {
+                    // Throttle time has passed, reset attempts
+                    $this->clearFailedAttempts($username);
+                    return false;
+                }
+            }
+        }
+        
+        return false;
     }
 
     /**
-     * Başarısız giriş denemesini kaydeder
+     * NOTE: Record a failed login attempt
      */
     public function recordFailedAttempt($username)
     {
@@ -80,9 +111,9 @@ class UserModel extends Model
     }
 
     /**
-     * Başarısız giriş denemelerini sıfırlar
+     * NOTE: Clear failed attempts after successful login
      */
-    public function resetFailedAttempts($username)
+    public function clearFailedAttempts($username)
     {
         $user = $this->where('username', $username)->first();
         
@@ -96,5 +127,24 @@ class UserModel extends Model
         ];
         
         return $this->update($user['id'], $data);
+    }
+
+    /**
+     * NOTE: Legacy methods for backward compatibility
+     */
+    public function verifyPin($username, $pin)
+    {
+        return $this->getUserByCredentials($username, $pin) !== false;
+    }
+
+    public function checkFailedAttempts($username)
+    {
+        $user = $this->where('username', $username)->first();
+        return $user ? $user['failed_attempts'] : 0;
+    }
+
+    public function resetFailedAttempts($username)
+    {
+        return $this->clearFailedAttempts($username);
     }
 } 

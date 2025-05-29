@@ -20,7 +20,7 @@ const OmarUtils = {
    // NOTE: Date manipulation helpers
    formatDateForDisplay: function (dateString) {
       const date = new Date(dateString);
-      return date.toLocaleDateString('tr-TR', {
+      return date.toLocaleDateString('en-US', {
          day: '2-digit',
          month: '2-digit',
          year: 'numeric'
@@ -102,11 +102,11 @@ const OmarUtils = {
       const errors = [];
 
       if (!formData.name || formData.name.trim().length < 3) {
-         errors.push('Alışkanlık adı en az 3 karakter olmalıdır.');
+         errors.push('Habit name must be at least 3 characters long.');
       }
 
       if (formData.description && formData.description.length > 500) {
-         errors.push('Açıklama 500 karakteri geçemez.');
+         errors.push('Description cannot exceed 500 characters.');
       }
 
       return {
@@ -130,108 +130,93 @@ const OmarUtils = {
       }
    },
 
-   // 🤖 Optimized by O.B. - Enhanced Chart Management
-   createScrollableChart: function (containerId, chartData, chartTitle = '') {
-      const container = document.getElementById(containerId);
-      if (!container) {
-         this.logTrace('Container not found', containerId);
-         return null;
-      }
-
-      // Create chart item wrapper
-      const chartItem = document.createElement('div');
-      chartItem.className = 'chart-item';
-
-      const chartWrapper = document.createElement('div');
-      chartWrapper.className = 'chart-wrapper';
-
-      if (chartTitle) {
-         const title = document.createElement('h4');
-         title.className = 'text-sm font-semibold mb-2 text-gray-700';
-         title.textContent = chartTitle;
-         chartWrapper.appendChild(title);
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.style.height = '160px';
-      chartWrapper.appendChild(canvas);
-
-      chartItem.appendChild(chartWrapper);
-      container.appendChild(chartItem);
-
-      // Create chart
-      const ctx = canvas.getContext('2d');
-      const config = this.getDefaultChartConfig('line');
-      config.data = chartData;
-
-      return new Chart(ctx, config);
+   // NOTE: Level calculation helper
+   calculateLevel: function (successRate, completedDays) {
+      return Math.floor((successRate / 10) + (completedDays / 7));
    },
 
-   // NOTE: Streak management utilities
-   getStreakBadgeClass: function (streakType) {
-      const streakClasses = {
-         excellent: 'streak-badge streak-excellent',
-         good: 'streak-badge streak-good',
-         starting: 'streak-badge streak-starting',
-         none: 'streak-badge streak-none'
+   // NOTE: Progress bar animation
+   animateProgressBar: function (element, targetWidth, duration = 1000) {
+      let width = 0;
+      const increment = targetWidth / (duration / 16);
+
+      const animate = () => {
+         if (width < targetWidth) {
+            width += increment;
+            element.style.width = `${Math.min(width, targetWidth)}%`;
+            requestAnimationFrame(animate);
+         }
       };
 
-      return streakClasses[streakType] || streakClasses.none;
+      requestAnimationFrame(animate);
    },
 
-   // NOTE: Format streak display
-   formatStreakDisplay: function (streakData) {
-      const { current_streak, streak_type, days_since_last } = streakData;
+   // NOTE: Chart data formatter
+   formatChartData: function (logs, days = 7) {
+      const data = [];
+      const labels = [];
+      const today = new Date();
 
-      let message = '';
-      let icon = '';
+      for (let i = days - 1; i >= 0; i--) {
+         const date = new Date(today);
+         date.setDate(date.getDate() - i);
+         const dateStr = date.toISOString().split('T')[0];
 
-      if (current_streak === 0) {
-         message = 'Bugün alışkanlık yapıldı';
-         icon = '😔';
-      } else if (current_streak === 1) {
-         message = '1 gün temiz!';
-         icon = '🌱';
-      } else if (current_streak < 7) {
-         message = `${current_streak} gün temiz!`;
-         icon = '💪';
-      } else if (current_streak < 30) {
-         message = `${current_streak} gün temiz!`;
-         icon = '🔥';
-      } else {
-         message = `${current_streak} gün temiz!`;
-         icon = '🏆';
+         labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+         const logForDate = logs.find(log => log.date === dateStr);
+         data.push(logForDate ? logForDate.count : 0);
       }
 
-      return {
-         message: message,
-         icon: icon,
-         badgeClass: this.getStreakBadgeClass(streak_type)
-      };
+      return { labels, data };
    },
 
-   // NOTE: Initialize scrollable charts container
-   initializeChartsContainer: function (containerId) {
-      const container = document.getElementById(containerId);
-      if (container) {
-         container.className = 'charts-container';
-         this.logTrace('Charts container initialized', containerId);
+   // 🤖 Optimized by O.B. - Revolutionary design helpers
+   initGlassmorphismEffects: function () {
+      const cards = document.querySelectorAll('.glass-container, .habit-card');
+      cards.forEach((card, index) => {
+         card.style.animationDelay = `${index * 0.1}s`;
+         card.classList.add('fade-in');
+      });
+   },
+
+   // NOTE: Streak calculation helper
+   calculateStreak: function (logs) {
+      if (!logs || logs.length === 0) return { current: 0, max: 0 };
+
+      logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      let currentStreak = 0;
+      let maxStreak = 0;
+      let tempStreak = 0;
+
+      for (let i = 0; i < logs.length; i++) {
+         const currentDate = new Date(logs[i].date);
+         const nextDate = i < logs.length - 1 ? new Date(logs[i + 1].date) : null;
+
+         tempStreak++;
+
+         if (nextDate) {
+            const diffTime = Math.abs(currentDate - nextDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 1) {
+               maxStreak = Math.max(maxStreak, tempStreak);
+               if (i === 0) currentStreak = tempStreak;
+               tempStreak = 0;
+            }
+         } else {
+            maxStreak = Math.max(maxStreak, tempStreak);
+            if (i === 0) currentStreak = tempStreak;
+         }
       }
+
+      return { current: currentStreak, max: maxStreak };
    }
 };
 
-// ✅ Rule 4: Personal Touch - Export for global usage
-window.OmarUtils = OmarUtils;
-
-// 🤖 Optimized by O.B. - Auto-initialization
+// 🤖 Optimized by O.B. - Global initialization
 document.addEventListener('DOMContentLoaded', function () {
-   OmarUtils.logTrace('Omar Utils initialized successfully');
-
-   // Apply fade-in animation to all cards
-   const cards = document.querySelectorAll('.omar-card, .habit-card');
-   cards.forEach((card, index) => {
-      setTimeout(() => {
-         OmarUtils.fadeInElement(card);
-      }, index * 100);
-   });
+   OmarUtils.logTrace('Omar Utils initialized');
+   OmarUtils.initGlassmorphismEffects();
 }); 

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'Alışkanlık Takipçisi') ?></title>
+    <title><?= esc($title ?? 'Habit Tracker 3.0') ?></title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,114 +11,125 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- 🧠 Omar BYA - Custom Styles -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- 🧠 Omar BYA - Revolutionary Design System -->
     <link rel="stylesheet" href="<?= base_url('assets/css/omar-style.css') ?>">
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#7c3aed">
+    <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Alışkanlık Takipçisi">
+    <meta name="apple-mobile-web-app-title" content="Habit Tracker 3.0">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="<?= site_url('dashboard') ?>" class="flex-shrink-0">
-                        <h1 class="text-xl font-bold text-purple-600">🎯 Alışkanlık Takipçisi</h1>
+<body class="min-h-screen">
+    
+    <!-- 🎨 Revolutionary Navigation Bar -->
+    <?php if (session()->get('isLoggedIn')): ?>
+        <nav class="glass-container m-6 p-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="<?= site_url('dashboard') ?>" class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        ⚡ Habit Tracker 3.0
                     </a>
                 </div>
                 
-                <?php if (session()->get('isLoggedIn')): ?>
                 <div class="flex items-center space-x-4">
-                    <a href="<?= site_url('dashboard') ?>" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                        Kontrol Paneli
-                    </a>
-                    <a href="<?= site_url('dashboard/habit/add') ?>" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">
-                        Yeni Alışkanlık
-                    </a>
-                    <a href="<?= site_url('auth/logout') ?>" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition">
-                        Çıkış
+                    <div class="hidden sm:flex items-center space-x-3">
+                        <span class="text-white/80 text-sm">Welcome back,</span>
+                        <span class="text-cyan-400 font-semibold"><?= esc(session()->get('username')) ?></span>
+                    </div>
+                    
+                    <a href="<?= site_url('auth/logout') ?>" class="btn-modern btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sign Out
                     </a>
                 </div>
-                <?php endif; ?>
+            </div>
+        </nav>
+    <?php endif; ?>
+    
+    <!-- 📢 Flash Messages -->
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="mx-6 mb-6">
+            <div class="glass-container p-4 border-l-4 border-green-400 fade-in">
+                <div class="flex items-center">
+                    <div class="stat-icon bg-gradient-to-br from-green-400 to-green-600 text-white mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <p class="text-white font-medium"><?= session()->getFlashdata('success') ?></p>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <!-- Flash Messages -->
-        <?php if (session()->getFlashdata('message')): ?>
-            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg fade-in">
-                <?= session()->getFlashdata('message') ?>
+    <?php endif; ?>
+    
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="mx-6 mb-6">
+            <div class="glass-container p-4 border-l-4 border-red-400 fade-in">
+                <div class="flex items-center">
+                    <div class="stat-icon bg-gradient-to-br from-red-400 to-red-600 text-white mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <p class="text-white font-medium"><?= session()->getFlashdata('error') ?></p>
+                </div>
             </div>
-        <?php endif; ?>
-
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg fade-in">
-                <?= session()->getFlashdata('error') ?>
-            </div>
-        <?php endif; ?>
-
-        <!-- Content Section -->
-        <div class="px-4 sm:px-0">
-            <?= $this->renderSection('content') ?>
         </div>
+    <?php endif; ?>
+    
+    <!-- 🎯 Main Content Area -->
+    <main>
+        <?= $this->renderSection('content') ?>
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-12">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <div class="text-center text-gray-500 text-sm">
-                <p>&copy; <?= date('Y') ?> Alışkanlık Takipçisi. 
-                <!-- 🤖 Optimized by O.B. -->
-                <span class="text-purple-600">Omar BYA</span> tarafından geliştirildi.</p>
+    
+    <!-- 🌟 Footer -->
+    <footer class="mt-12 mb-6">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="glass-container p-6 text-center">
+                <p class="text-gray-300 text-sm">
+                    © 2025 Habit Tracker 3.0 | Powered by 
+                    <span class="text-cyan-400 font-semibold">Omar BYA Development</span>
+                </p>
+                <p class="text-gray-400 text-xs mt-2">
+                    🚀 Revolutionary Design v3.0 | Built with ❤️ and advanced glassmorphism
+                </p>
             </div>
         </div>
     </footer>
 
-    <!-- 🧠 Omar BYA - Custom JavaScript -->
+    <!-- 🧠 Omar BYA - Revolutionary JavaScript Stack -->
     <script src="<?= base_url('assets/js/omar-utils.js') ?>"></script>
     <script src="<?= base_url('assets/js/omar-notifications.js') ?>"></script>
     
-    <!-- Additional Scripts Section -->
+    <!-- Scripts -->
     <?= $this->renderSection('scripts') ?>
-
-    <!-- Flash Messages to Toast Notifications -->
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Convert flash messages to toast notifications
-            <?php if (session()->getFlashdata('message')): ?>
-                OmarNotifications.success('<?= addslashes(session()->getFlashdata('message')) ?>');
-            <?php endif; ?>
-
-            <?php if (session()->getFlashdata('error')): ?>
-                OmarNotifications.error('<?= addslashes(session()->getFlashdata('error')) ?>');
-            <?php endif; ?>
-            
-            // Hide flash message containers since we're using toasts
-            document.querySelectorAll('.fade-in').forEach(el => {
-                if (el.textContent.includes('<?= session()->getFlashdata('message') ?>') || 
-                    el.textContent.includes('<?= session()->getFlashdata('error') ?>')) {
-                    el.style.display = 'none';
-                }
-            });
+    // 🤖 Optimized by O.B. - Global interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide flash messages
+        const flashMessages = document.querySelectorAll('.fade-in');
+        flashMessages.forEach(message => {
+            if (message.textContent.includes('successfully') || message.textContent.includes('Successfully')) {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateY(-20px)';
+                    setTimeout(() => message.remove(), 300);
+                }, 5000);
+            }
         });
-    </script>
-
-    <!-- Service Worker Registration -->
-    <script>
-        // TODO: PWA Service Worker implementation
-        if ('serviceWorker' in navigator) {
-            // NOTE: Service worker will be implemented later
-            OmarUtils.logTrace('Service Worker support detected');
-        }
+    });
     </script>
 </body>
 </html> 
