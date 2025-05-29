@@ -2,7 +2,7 @@
 
 /**
  * 🧠 Omar BYA - Authentication Controller
- * 🤖 Optimized by O.B. - Enhanced PIN System (4-8 digits)
+ * 🤖 Optimized by O.B. - Ultra Flexible PIN System (3-8 digits)
  * Code aligned with Omar BYA's Personal Style Sheet
  */
 
@@ -83,7 +83,7 @@ class Auth extends BaseController
                     ]
                 ],
                 'pin' => [
-                    'rules' => 'required|min_length[4]|max_length[8]|numeric',
+                    'rules' => 'required|min_length[3]|max_length[8]|numeric',
                     'errors' => [
                         'required' => 'PIN kodu alanı zorunludur.',
                         'min_length' => 'PIN kodu en az {param} haneli olmalıdır.',

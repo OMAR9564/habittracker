@@ -23,15 +23,15 @@
             </div>
             
             <div class="mb-4">
-                <label for="pin" class="block text-gray-700 font-medium mb-2">PIN Kodu (4-8 Hane)</label>
+                <label for="pin" class="block text-gray-700 font-medium mb-2">PIN Kodu (3-8 Hane)</label>
                 <input type="password" name="pin" id="pin" 
                        class="w-full border <?= (isset($validation) && $validation->hasError('pin')) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                       minlength="4" maxlength="8" inputmode="numeric" pattern="[0-9]{4,8}" required>
+                       minlength="3" maxlength="8" inputmode="numeric" pattern="[0-9]{3,8}" required>
                 
                 <?php if (isset($validation) && $validation->hasError('pin')): ?>
                     <p class="mt-1 text-sm text-red-500"><?= $validation->getError('pin') ?></p>
                 <?php else: ?>
-                    <p class="mt-1 text-sm text-gray-500">4-8 haneli PIN kodunuzu girin (Sadece rakam).</p>
+                    <p class="mt-1 text-sm text-gray-500">3-8 haneli PIN kodunuzu girin (Sadece rakam).</p>
                 <?php endif; ?>
             </div>
             
@@ -39,7 +39,7 @@
                 <label for="confirm_pin" class="block text-gray-700 font-medium mb-2">PIN Kodunu Onayla</label>
                 <input type="password" name="confirm_pin" id="confirm_pin" 
                        class="w-full border <?= (isset($validation) && $validation->hasError('confirm_pin')) ? 'border-red-500' : 'border-gray-300' ?> rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                       minlength="4" maxlength="8" inputmode="numeric" pattern="[0-9]{4,8}" required>
+                       minlength="3" maxlength="8" inputmode="numeric" pattern="[0-9]{3,8}" required>
                 
                 <?php if (isset($validation) && $validation->hasError('confirm_pin')): ?>
                     <p class="mt-1 text-sm text-red-500"><?= $validation->getError('confirm_pin') ?></p>
@@ -62,10 +62,11 @@
     <div class="mt-6 bg-purple-100 border-l-4 border-purple-500 p-4 rounded-lg">
         <h3 class="font-bold mb-2">Güvenlik İpuçları</h3>
         <ul class="text-sm text-gray-700 list-disc list-inside">
-            <li>PIN kodunuzu unutmayın (4-8 hane arası).</li>
+            <li>PIN kodunuzu unutmayın (3-8 hane arası).</li>
             <li>PIN kodunuzu hiç kimseyle paylaşmayın.</li>
-            <li>Kolay tahmin edilebilir kodlar kullanmayın (örn. 1234, 1111).</li>
-            <li>Daha güvenli olmak için 6-8 haneli PIN tercih edin.</li>
+            <li>Kolay tahmin edilebilir kodlar kullanmayın (örn. 123, 111).</li>
+            <li>🔒 Daha güvenli olmak için 5-8 haneli PIN tercih edin.</li>
+            <li>⚠️ 3 haneli PIN'ler hızlı giriş için uygundur ama daha az güvenlidir.</li>
         </ul>
     </div>
 </div>
