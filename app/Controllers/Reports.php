@@ -39,7 +39,8 @@ class Reports extends BaseController
         }
         
         $userId = session()->get('user_id');
-        omarTrace('Reports accessed', ['user_id' => $userId]);
+        // omarTrace('Reports accessed', ['user_id' => $userId]); // Temporarily disabled
+        log_message('info', 'Reports accessed by user: ' . $userId);
         
         // Get user habits for filters
         $habits = $this->habitModel->getUserHabits($userId);
@@ -78,11 +79,8 @@ class Reports extends BaseController
         $endDate = $this->request->getGet('end_date') ?? date('Y-m-d');
         $habitId = $this->request->getGet('habit_id');
         
-        omarTrace('CSV Export requested', [
-            'user_id' => $userId,
-            'date_range' => [$startDate, $endDate],
-            'habit_id' => $habitId
-        ]);
+        // omarTrace('CSV Export requested', ['user_id' => $userId, 'date_range' => [$startDate, $endDate], 'habit_id' => $habitId]); // Temporarily disabled
+        log_message('info', 'CSV Export requested by user: ' . $userId . ' for date range: ' . $startDate . ' to ' . $endDate);
         
         // Generate CSV data
         $csvData = $this->generateCsvData($userId, $startDate, $endDate, $habitId);
@@ -123,7 +121,15 @@ class Reports extends BaseController
             $totalDays = (new \DateTime($endDate))->diff(new \DateTime($startDate))->days + 1;
             $activeDays = count($logs);
             $successRate = $totalDays > 0 ? ($activeDays / $totalDays) * 100 : 0;
-            $currentStreak = calculateHabitStreak($allLogs);
+            
+            // Simple streak calculation
+            $currentStreak = 0;
+            if (!empty($allLogs)) {
+                $lastLog = $allLogs[0]; // Assuming logs are sorted by date desc
+                $lastLogDate = new \DateTime($lastLog['date']);
+                $today = new \DateTime();
+                $currentStreak = $lastLogDate->diff($today)->days;
+            }
             
             $habitData = [
                 'id' => $habit['id'],
@@ -133,7 +139,7 @@ class Reports extends BaseController
                 'active_days' => $activeDays,
                 'success_rate' => $successRate,
                 'current_streak' => $currentStreak,
-                'trend_data' => generateChartData($logs, 30)
+                'trend_data' => [] // Simplified for now
             ];
             
             $reportData['summary'][] = $habitData;
