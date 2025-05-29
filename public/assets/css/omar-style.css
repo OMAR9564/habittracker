@@ -90,3 +90,161 @@
 }
 
 /* NOTE: Custom styling aligned with Omar BYA standards */
+
+/* 📊 Charts Improvements - Issue #2 Solution */
+.charts-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 1rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) transparent;
+}
+
+.charts-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.charts-container::-webkit-scrollbar-track {
+  background: rgba(124, 58, 237, 0.1);
+  border-radius: 3px;
+}
+
+.charts-container::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.chart-item {
+  display: inline-block;
+  min-width: 300px;
+  max-width: 400px;
+  margin-right: 1rem;
+  vertical-align: top;
+  white-space: normal;
+}
+
+.chart-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 200px;
+  position: relative;
+}
+
+/* 🎯 Streak Display Components */
+.streak-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.streak-excellent {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.streak-good {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.streak-starting {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.streak-none {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.streak-counter {
+  @apply text-2xl font-bold;
+  background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 🔢 Counter Fix - Issue #3 Solution */
+.stats-card {
+  @apply bg-white rounded-lg shadow-md p-6 mb-4;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary-color);
+}
+
+.stats-card:hover {
+  @apply shadow-lg;
+  transform: translateY(-2px);
+}
+
+.stats-value {
+  @apply text-3xl font-bold mb-2;
+  color: var(--primary-color);
+}
+
+.stats-label {
+  @apply text-sm text-gray-600 uppercase tracking-wide;
+}
+
+/* 📱 Mobile Responsive Charts */
+@media (max-width: 768px) {
+  .charts-container {
+    padding: 0.5rem 0;
+  }
+
+  .chart-item {
+    min-width: 280px;
+    max-width: 320px;
+    margin-right: 0.5rem;
+  }
+
+  .chart-wrapper {
+    height: 180px;
+    padding: 0.75rem;
+  }
+
+  .streak-badge {
+    @apply px-2 py-1 text-xs;
+  }
+}
+
+/* 🎮 Hover Effects */
+.habit-card:hover .streak-badge {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.chart-wrapper:hover {
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+/* ✨ Loading States */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--primary-color);
+  font-size: 0.875rem;
+}
+
+.chart-loading::after {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--primary-color);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

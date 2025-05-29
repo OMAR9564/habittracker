@@ -45,9 +45,18 @@ class Dashboard extends BaseController
                 session()->setFlashdata('goal_completed_' . $habit['id'], 'Tebrikler! ' . $habit['name'] . ' alışkanlığında hedefinizi tamamladınız!');
             }
             
+            // 🤖 Optimized by O.B. - Enhanced streak calculation
+            $logs = $this->habitLogModel->getHabitLogs($habit['id']);
+            $streakData = calculateHabitStreak($logs);
+            $habit['streak_data'] = $streakData;
+            
             // Trend verilerini güncelle
             $habit['trend_data'] = $this->habitLogModel->getTrendData($habit['id'], 30, true);
             $habit['active_goal'] = $this->goalHistoryModel->getActiveGoal($habit['id']);
+            
+            // NOTE: Fix counters calculation
+            $habit['total_logs'] = count($logs);
+            $habit['last_activity'] = $streakData['last_activity'];
         }
         
         $data = [

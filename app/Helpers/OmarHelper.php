@@ -21,39 +21,97 @@ if (!function_exists('omarTrace')) {
 
 if (!function_exists('calculateHabitStreak')) {
     /**
-     * NOTE: Calculate habit streak days
+     * NOTE: Calculate habit streak days - Enhanced version
+     * 🤖 Optimized by O.B. - Advanced streak calculation
      * 
      * @param array $logs
-     * @return int
+     * @return array ['current_streak', 'max_streak', 'streak_type']
      */
     function calculateHabitStreak($logs)
     {
         if (empty($logs)) {
-            return 0;
+            return [
+                'current_streak' => 0,
+                'max_streak' => 0,
+                'streak_type' => 'none',
+                'last_activity' => null,
+                'days_since_last' => 0
+            ];
         }
 
-        $streak = 0;
-        $today = new DateTime();
-        $currentDate = clone $today;
-
-        // Sort logs by date desc
+        // Sort logs by date descending
         usort($logs, function($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
 
-        foreach ($logs as $log) {
-            $logDate = new DateTime($log['date']);
-            $daysDiff = $currentDate->diff($logDate)->days;
-
-            if ($daysDiff <= 1) {
-                $streak++;
-                $currentDate = $logDate;
+        $today = new DateTime();
+        $currentStreak = 0;
+        $maxStreak = 0;
+        $lastActivityDate = null;
+        $daysSinceLastLog = 0;
+        
+        // Find last activity
+        if (!empty($logs)) {
+            $lastActivityDate = $logs[0]['date'];
+        }
+        
+        // Calculate current streak (days without the habit)
+        if ($lastActivityDate) {
+            $lastLogDate = new DateTime($lastActivityDate);
+            $daysSinceLastLog = $lastLogDate->diff($today)->days;
+            
+            // If last log was today, streak is 0
+            if ($lastLogDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                $currentStreak = 0;
             } else {
-                break;
+                $currentStreak = $daysSinceLastLog;
+            }
+        } else {
+            $currentStreak = 30; // Default if no logs
+        }
+        
+        // Calculate maximum streak in history
+        $allDates = array_column($logs, 'date');
+        
+        // Create date range from first log to today
+        if (!empty($allDates)) {
+            $firstDate = new DateTime(min($allDates));
+            $endDate = clone $today;
+            
+            $interval = new DateInterval('P1D');
+            $dateRange = new DatePeriod($firstDate, $interval, $endDate);
+            
+            $tempMaxStreak = 0;
+            
+            foreach ($dateRange as $date) {
+                $dateStr = $date->format('Y-m-d');
+                
+                if (!in_array($dateStr, $allDates)) {
+                    $tempMaxStreak++;
+                    $maxStreak = max($maxStreak, $tempMaxStreak);
+                } else {
+                    $tempMaxStreak = 0;
+                }
             }
         }
-
-        return $streak;
+        
+        // Determine streak type
+        $streakType = 'none';
+        if ($currentStreak >= 7) {
+            $streakType = 'excellent';
+        } elseif ($currentStreak >= 3) {
+            $streakType = 'good';
+        } elseif ($currentStreak >= 1) {
+            $streakType = 'starting';
+        }
+        
+        return [
+            'current_streak' => $currentStreak,
+            'max_streak' => $maxStreak,
+            'streak_type' => $streakType,
+            'last_activity' => $lastActivityDate,
+            'days_since_last' => $daysSinceLastLog
+        ];
     }
 }
 

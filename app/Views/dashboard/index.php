@@ -26,13 +26,14 @@
     </div>
 <?php else: ?>
 
-    <!-- Özet İstatistikler -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- 🤖 Optimized by O.B. - Enhanced Statistics with Fixed Counters -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <?php 
         $totalHabits = count($habits);
         $totalLevels = 0;
         $activeGoals = 0;
         $totalSuccess = 0;
+        $totalStreakDays = 0;
         
         foreach ($habits as $habit) {
             $totalLevels += $habit['level'];
@@ -40,16 +41,21 @@
                 $activeGoals++;
             }
             $totalSuccess += $habit['success_percentage'];
+            
+            // 🎯 Streak calculation
+            if (isset($habit['streak_data'])) {
+                $totalStreakDays += $habit['streak_data']['current_streak'];
+            }
         }
         
         $avgSuccess = $totalHabits > 0 ? $totalSuccess / $totalHabits : 0;
         ?>
         
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="stats-card">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Takip Edilen Alışkanlıklar</p>
-                    <h3 class="text-3xl font-bold mt-2"><?= $totalHabits ?></h3>
+                    <p class="stats-label">Takip Edilen</p>
+                    <h3 class="stats-value"><?= $totalHabits ?></h3>
                 </div>
                 <div class="bg-purple-100 rounded-full p-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,11 +65,11 @@
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="stats-card">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Toplam Seviye</p>
-                    <h3 class="text-3xl font-bold mt-2"><?= $totalLevels ?></h3>
+                    <p class="stats-label">Toplam Seviye</p>
+                    <h3 class="stats-value"><?= $totalLevels ?></h3>
                 </div>
                 <div class="bg-green-100 rounded-full p-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,11 +79,27 @@
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <!-- 🎯 NEW: Total Streak Days Counter -->
+        <div class="stats-card">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Aktif Hedefler</p>
-                    <h3 class="text-3xl font-bold mt-2"><?= $activeGoals ?></h3>
+                    <p class="stats-label">Toplam Streak</p>
+                    <h3 class="streak-counter"><?= $totalStreakDays ?></h3>
+                    <p class="text-xs text-gray-500">gün temiz</p>
+                </div>
+                <div class="bg-orange-100 rounded-full p-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="stats-label">Aktif Hedefler</p>
+                    <h3 class="stats-value"><?= $activeGoals ?></h3>
                 </div>
                 <div class="bg-blue-100 rounded-full p-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,11 +109,11 @@
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="stats-card">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-500">Ortalama Başarı</p>
-                    <h3 class="text-3xl font-bold mt-2"><?= number_format($avgSuccess, 1) ?>%</h3>
+                    <p class="stats-label">Ortalama Başarı</p>
+                    <h3 class="stats-value"><?= number_format($avgSuccess, 1) ?>%</h3>
                 </div>
                 <div class="bg-yellow-100 rounded-full p-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,8 +131,45 @@
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-4">
                         <h2 class="text-xl font-semibold"><?= esc($habit['name']) ?></h2>
-                        <span class="text-xs font-medium bg-purple-100 text-purple-800 px-2 py-1 rounded-full">Seviye <?= $habit['level'] ?></span>
+                        <span class="level-badge">Seviye <?= $habit['level'] ?></span>
                     </div>
+                    
+                    <!-- 🎯 Streak Display -->
+                    <?php if (isset($habit['streak_data'])): ?>
+                        <div class="mb-4">
+                            <?php 
+                            $streakData = $habit['streak_data'];
+                            $streakClass = 'streak-badge';
+                            
+                            switch($streakData['streak_type']) {
+                                case 'excellent': $streakClass .= ' streak-excellent'; break;
+                                case 'good': $streakClass .= ' streak-good'; break;
+                                case 'starting': $streakClass .= ' streak-starting'; break;
+                                default: $streakClass .= ' streak-none'; break;
+                            }
+                            
+                            $icon = '🌱';
+                            $message = $streakData['current_streak'] . ' gün temiz';
+                            
+                            if ($streakData['current_streak'] === 0) {
+                                $icon = '😔';
+                                $message = 'Bugün yapıldı';
+                            } elseif ($streakData['current_streak'] >= 30) {
+                                $icon = '🏆';
+                            } elseif ($streakData['current_streak'] >= 7) {
+                                $icon = '🔥';
+                            } elseif ($streakData['current_streak'] >= 3) {
+                                $icon = '💪';
+                            }
+                            ?>
+                            <div class="flex justify-between items-center">
+                                <span class="<?= $streakClass ?>">
+                                    <?= $icon ?> <?= $message ?>
+                                </span>
+                                <span class="text-xs text-gray-500">En yüksek: <?= $streakData['max_streak'] ?> gün</span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     
                     <?php if (!empty($habit['description'])): ?>
                         <p class="text-gray-600 text-sm mb-4"><?= esc($habit['description']) ?></p>
@@ -159,9 +218,15 @@
                     </div>
                 </div>
                 
+                <!-- 🤖 Optimized by O.B. - Scrollable Charts System -->
                 <?php if (!empty($habit['trend_data'])): ?>
-                    <div class="px-6 pb-4">
-                        <canvas id="trendChart<?= $habit['id'] ?>" height="60"></canvas>
+                    <div class="charts-container">
+                        <div class="chart-item">
+                            <div class="chart-wrapper">
+                                <h4 class="text-sm font-semibold mb-2 text-gray-700">30 Günlük Trend</h4>
+                                <canvas id="trendChart<?= $habit['id'] ?>" style="height: 140px;"></canvas>
+                            </div>
+                        </div>
                     </div>
                     
                     <script>
@@ -169,20 +234,24 @@
                             const ctx = document.getElementById('trendChart<?= $habit['id'] ?>').getContext('2d');
                             const trendData = <?= json_encode($habit['trend_data']) ?>;
                             
-                            const labels = Object.keys(trendData);
-                            const data = Object.values(trendData);
+                            const labels = Object.keys(trendData).slice(-15); // Son 15 gün
+                            const data = Object.values(trendData).slice(-15);
                             
                             new Chart(ctx, {
                                 type: 'line',
                                 data: {
-                                    labels: labels,
+                                    labels: labels.map(date => {
+                                        const d = new Date(date);
+                                        return d.getDate() + '/' + (d.getMonth() + 1);
+                                    }),
                                     datasets: [{
-                                        label: 'Alışkanlık Kaydı',
+                                        label: 'Başarı Puanı',
                                         data: data,
                                         borderColor: 'rgba(124, 58, 237, 0.8)',
                                         backgroundColor: 'rgba(124, 58, 237, 0.1)',
                                         tension: 0.4,
-                                        fill: true
+                                        fill: true,
+                                        borderWidth: 2
                                     }]
                                 },
                                 options: {
@@ -195,17 +264,38 @@
                                     },
                                     scales: {
                                         x: {
-                                            display: false
+                                            display: true,
+                                            grid: {
+                                                display: false
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 10
+                                                },
+                                                maxTicksLimit: 7
+                                            }
                                         },
                                         y: {
-                                            display: false,
+                                            display: true,
                                             beginAtZero: true,
-                                            suggestedMax: 5
+                                            max: 100,
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.1)'
+                                            },
+                                            ticks: {
+                                                font: {
+                                                    size: 10
+                                                },
+                                                callback: function(value) {
+                                                    return value + '%';
+                                                }
+                                            }
                                         }
                                     },
                                     elements: {
                                         point: {
-                                            radius: 0
+                                            radius: 3,
+                                            hoverRadius: 5
                                         }
                                     }
                                 }

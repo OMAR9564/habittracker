@@ -128,6 +128,95 @@ const OmarUtils = {
       } else {
          alert(`ℹ️ ${message}`);
       }
+   },
+
+   // 🤖 Optimized by O.B. - Enhanced Chart Management
+   createScrollableChart: function (containerId, chartData, chartTitle = '') {
+      const container = document.getElementById(containerId);
+      if (!container) {
+         this.logTrace('Container not found', containerId);
+         return null;
+      }
+
+      // Create chart item wrapper
+      const chartItem = document.createElement('div');
+      chartItem.className = 'chart-item';
+
+      const chartWrapper = document.createElement('div');
+      chartWrapper.className = 'chart-wrapper';
+
+      if (chartTitle) {
+         const title = document.createElement('h4');
+         title.className = 'text-sm font-semibold mb-2 text-gray-700';
+         title.textContent = chartTitle;
+         chartWrapper.appendChild(title);
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.style.height = '160px';
+      chartWrapper.appendChild(canvas);
+
+      chartItem.appendChild(chartWrapper);
+      container.appendChild(chartItem);
+
+      // Create chart
+      const ctx = canvas.getContext('2d');
+      const config = this.getDefaultChartConfig('line');
+      config.data = chartData;
+
+      return new Chart(ctx, config);
+   },
+
+   // NOTE: Streak management utilities
+   getStreakBadgeClass: function (streakType) {
+      const streakClasses = {
+         excellent: 'streak-badge streak-excellent',
+         good: 'streak-badge streak-good',
+         starting: 'streak-badge streak-starting',
+         none: 'streak-badge streak-none'
+      };
+
+      return streakClasses[streakType] || streakClasses.none;
+   },
+
+   // NOTE: Format streak display
+   formatStreakDisplay: function (streakData) {
+      const { current_streak, streak_type, days_since_last } = streakData;
+
+      let message = '';
+      let icon = '';
+
+      if (current_streak === 0) {
+         message = 'Bugün alışkanlık yapıldı';
+         icon = '😔';
+      } else if (current_streak === 1) {
+         message = '1 gün temiz!';
+         icon = '🌱';
+      } else if (current_streak < 7) {
+         message = `${current_streak} gün temiz!`;
+         icon = '💪';
+      } else if (current_streak < 30) {
+         message = `${current_streak} gün temiz!`;
+         icon = '🔥';
+      } else {
+         message = `${current_streak} gün temiz!`;
+         icon = '🏆';
+      }
+
+      return {
+         message: message,
+         icon: icon,
+         badgeClass: this.getStreakBadgeClass(streak_type)
+      };
+   },
+
+   // NOTE: Initialize scrollable charts container
+   initializeChartsContainer: function (containerId) {
+      const container = document.getElementById(containerId);
+      if (container) {
+         container.className = 'charts-container';
+         this.logTrace('Charts container initialized', containerId);
+      }
    }
 };
 
