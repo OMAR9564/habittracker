@@ -15,7 +15,10 @@ if (!function_exists('omarTrace')) {
      */
     function omarTrace($message, $data = null)
     {
-        log_message('info', '[OMAR-TRACE] ' . $message . ' ' . json_encode($data));
+        // Only log if in CodeIgniter context
+        if (function_exists('log_message')) {
+            log_message('info', '[OMAR-TRACE] ' . $message . ' ' . json_encode($data));
+        }
     }
 }
 
@@ -242,5 +245,4 @@ if (!function_exists('generateChartData')) {
     }
 }
 
-// 🤖 Optimized by O.B. - Helper loaded
-omarTrace('Omar Helper functions loaded successfully'); 
+// 🤖 Optimized by O.B. - Helper loaded successfully 

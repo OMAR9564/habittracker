@@ -22,7 +22,7 @@ class Reports extends BaseController
         $this->habitLogModel = new HabitLogModel();
         $this->goalHistoryModel = new GoalHistoryModel();
         
-        // 🤖 Optimized by O.B.
+        // 🤖 Optimized by O.B. - Enhanced security (OmarHelper auto-loaded from BaseController)
         helper(['security', 'form']);
     }
     
