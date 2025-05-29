@@ -35,7 +35,8 @@ class Dashboard extends BaseController
         }
         
         $userId = session()->get('user_id');
-        omarTrace('Dashboard accessed', ['user_id' => $userId]);
+        // omarTrace('Dashboard accessed', ['user_id' => $userId]); // Temporarily disabled
+        log_message('info', 'Dashboard accessed by user: ' . $userId);
         
         // Kullanıcının alışkanlıklarını getir
         $habits = $this->habitModel->getUserHabits($userId);
@@ -50,9 +51,9 @@ class Dashboard extends BaseController
                 session()->setFlashdata('goal_completed_' . $habit['id'], 'Tebrikler! ' . $habit['name'] . ' alışkanlığında hedefinizi tamamladınız!');
             }
             
-            // 🤖 Optimized by O.B. - Enhanced streak calculation
+            // 🤖 Optimized by O.B. - Enhanced streak calculation (simplified)
             $logs = $this->habitLogModel->getHabitLogs($habit['id']);
-            $streakData = calculateHabitStreak($logs);
+            $streakData = $this->calculateSimpleStreak($logs); // Use local function instead
             $habit['streak_data'] = $streakData;
             
             // Trend verilerini güncelle
@@ -89,8 +90,11 @@ class Dashboard extends BaseController
             if ($this->validate($rules)) {
                 $userId = session()->get('user_id');
                 
-                // NOTE: Sanitize input using helper function
-                $sanitizedInput = sanitizeHabitInput($this->request->getPost());
+                // NOTE: Sanitize input using basic PHP functions instead of helper
+                $sanitizedInput = [
+                    'name' => trim(strip_tags($this->request->getPost('name') ?? '')),
+                    'description' => trim(strip_tags($this->request->getPost('description') ?? ''))
+                ];
                 
                 $data = [
                     'user_id' => $userId,
@@ -108,7 +112,8 @@ class Dashboard extends BaseController
                 if ($habitId) {
                     // İlk hedefi oluştur
                     $this->goalHistoryModel->startNewGoal($habitId, 3);
-                    omarTrace('New habit created', ['habit_id' => $habitId, 'user_id' => $userId]);
+                    // omarTrace('New habit created', ['habit_id' => $habitId, 'user_id' => $userId]); // Temporarily disabled
+                    log_message('info', 'New habit created: ' . $habitId . ' for user: ' . $userId);
                     
                     return redirect()->to('/dashboard')->with('message', 'Alışkanlık başarıyla eklendi.');
                 } else {
@@ -435,5 +440,62 @@ class Dashboard extends BaseController
         $this->habitLogModel->getTrendData($id, 90, true);
         
         return redirect()->to("/dashboard/habit/$id")->with('message', $message);
+    }
+    
+    /**
+     * Simple streak calculation without helper dependency
+     * 🤖 Optimized by O.B. - Temporary fallback function
+     */
+    private function calculateSimpleStreak($logs)
+    {
+        if (empty($logs)) {
+            return [
+                'current_streak' => 0,
+                'max_streak' => 0,
+                'streak_type' => 'none',
+                'last_activity' => null,
+                'days_since_last' => 0
+            ];
+        }
+
+        // Sort logs by date descending
+        usort($logs, function($a, $b) {
+            return strtotime($b['date']) - strtotime($a['date']);
+        });
+
+        $today = new \DateTime();
+        $currentStreak = 0;
+        $lastActivityDate = $logs[0]['date'] ?? null;
+        
+        // Calculate current streak (days without the habit)
+        if ($lastActivityDate) {
+            $lastLogDate = new \DateTime($lastActivityDate);
+            $daysSinceLastLog = $lastLogDate->diff($today)->days;
+            
+            // If last log was today, streak is 0
+            if ($lastLogDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                $currentStreak = 0;
+            } else {
+                $currentStreak = $daysSinceLastLog;
+            }
+        }
+        
+        // Determine streak type
+        $streakType = 'none';
+        if ($currentStreak >= 7) {
+            $streakType = 'excellent';
+        } elseif ($currentStreak >= 3) {
+            $streakType = 'good';
+        } elseif ($currentStreak >= 1) {
+            $streakType = 'starting';
+        }
+        
+        return [
+            'current_streak' => $currentStreak,
+            'max_streak' => $currentStreak, // Simplified
+            'streak_type' => $streakType,
+            'last_activity' => $lastActivityDate,
+            'days_since_last' => $currentStreak
+        ];
     }
 } 
