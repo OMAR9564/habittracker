@@ -444,7 +444,7 @@ class Dashboard extends BaseController
     
     /**
      * Simple streak calculation without helper dependency
-     * 🤖 Optimized by O.B. - Temporary fallback function
+     * 🤖 Optimized by O.B. - Enhanced streak calculation with max streak
      */
     private function calculateSimpleStreak($logs)
     {
@@ -458,19 +458,20 @@ class Dashboard extends BaseController
             ];
         }
 
-        // Sort logs by date descending
+        // Sort logs by date descending (newest first)
         usort($logs, function($a, $b) {
             return strtotime($b['date']) - strtotime($a['date']);
         });
 
         $today = new \DateTime();
         $currentStreak = 0;
+        $maxStreak = 0;
         $lastActivityDate = $logs[0]['date'] ?? null;
         
         // Calculate current streak (days without the habit)
         if ($lastActivityDate) {
             $lastLogDate = new \DateTime($lastActivityDate);
-            $daysSinceLastLog = $lastLogDate->diff($today)->days;
+            $daysSinceLastLog = (int)$lastLogDate->diff($today)->days;
             
             // If last log was today, streak is 0
             if ($lastLogDate->format('Y-m-d') === $today->format('Y-m-d')) {
@@ -480,11 +481,49 @@ class Dashboard extends BaseController
             }
         }
         
+        // Calculate maximum streak by finding longest gap between consecutive logs
+        $dates = array_map(function($log) {
+            return $log['date'];
+        }, $logs);
+        
+        // Add today's date if not present
+        if (!in_array($today->format('Y-m-d'), $dates)) {
+            array_unshift($dates, $today->format('Y-m-d'));
+        }
+        
+        // Sort dates ascending
+        sort($dates);
+        
+        $tempStreak = 0;
+        $previousDate = null;
+        
+        foreach ($dates as $dateStr) {
+            $currentDate = new \DateTime($dateStr);
+            
+            if ($previousDate === null) {
+                $tempStreak = 1;
+            } else {
+                $dayDiff = (int)$previousDate->diff($currentDate)->days;
+                if ($dayDiff === 1) {
+                    $tempStreak++;
+                } else {
+                    // Streak broken, save max and reset
+                    $maxStreak = max($maxStreak, $tempStreak);
+                    $tempStreak = 1;
+                }
+            }
+            
+            $previousDate = $currentDate;
+        }
+        
+        // Don't forget the last streak
+        $maxStreak = max($maxStreak, $tempStreak, $currentStreak);
+        
         // Determine streak type
         $streakType = 'none';
-        if ($currentStreak >= 7) {
+        if ($currentStreak >= 30) {
             $streakType = 'excellent';
-        } elseif ($currentStreak >= 3) {
+        } elseif ($currentStreak >= 7) {
             $streakType = 'good';
         } elseif ($currentStreak >= 1) {
             $streakType = 'starting';
@@ -492,7 +531,7 @@ class Dashboard extends BaseController
         
         return [
             'current_streak' => $currentStreak,
-            'max_streak' => $currentStreak, // Simplified
+            'max_streak' => $maxStreak,
             'streak_type' => $streakType,
             'last_activity' => $lastActivityDate,
             'days_since_last' => $currentStreak
