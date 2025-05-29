@@ -18,10 +18,10 @@
 - ✅ Streak türlerine göre renklendirme (excellent, good, starting, none)
 
 **Gereksinimler:**
-- [ ] Streak hesaplama algoritması
-- [ ] Dashboard'da streak göstergesi
-- [ ] Habit detay sayfasında streak bilgisi
-- [ ] Streak kırıldığında uyarı
+- [x] Streak hesaplama algoritması
+- [x] Dashboard'da streak göstergesi
+- [x] Habit detay sayfasında streak bilgisi
+- [x] Streak kırıldığında uyarı
 
 ---
 
@@ -41,10 +41,10 @@
 - ✅ Individual chart wrappers
 
 **Gereksinimler:**
-- [ ] Horizontal scroll özelliği
-- [ ] Grafik container'ları düzenleme
-- [ ] Mobile responsive grafik tasarımı
-- [ ] Chart.js konfigürasyonu güncelleme
+- [x] Horizontal scroll özelliği
+- [x] Grafik container'ları düzenleme
+- [x] Mobile responsive grafik tasarımı
+- [x] Chart.js konfigürasyonu güncelleme
 
 ---
 
@@ -64,16 +64,40 @@
 - ✅ Enhanced statistics display
 
 **Gereksinimler:**
-- [ ] Sayaç hesaplama algoritmalarını düzelt
-- [ ] Başarı oranı formülünü gözden geçir
-- [ ] Level hesaplama mantığını kontrol et
-- [ ] Test case'leri ekle
+- [x] Sayaç hesaplama algoritmalarını düzelt
+- [x] Başarı oranı formülünü gözden geçir
+- [x] Level hesaplama mantığını kontrol et
+- [x] Test case'leri ekle
+
+---
+
+### Issue #4: 🔒 PIN Sistemi Esnekleştirme ✅ **ÇÖZÜLDÜ**
+**Öncelik**: Orta  
+**Etiketler**: `enhancement`, `security`, `user-experience`
+
+**Açıklama:**
+- ✅ 6 haneli zorunluluk kaldırıldı
+- ✅ 4-8 hane arası esnek PIN sistemi
+- ✅ Kullanıcı dostu validation mesajları
+- ✅ Güvenlik ipuçları güncellendi
+
+**Çözüm:**
+- ✅ Auth controller validation kuralları güncellendi
+- ✅ Login/Register form alanları düzenlendi
+- ✅ Pattern validation (4-8 hane)
+- ✅ Kullanıcı arayüzü metinleri güncellendi
+
+**Gereksinimler:**
+- [x] Validation kurallarını güncelle (min 4, max 8)
+- [x] Frontend form alanlarını düzenle
+- [x] Güvenlik ipuçlarını güncelle
+- [x] Ana sayfa açıklamalarını revize et
 
 ---
 
 ## 🔄 **Orta Öncelikli Issues**
 
-### Issue #4: 🎨 UI/UX İyileştirmeleri
+### Issue #5: 🎨 UI/UX İyileştirmeleri ⏳ **IN PROGRESS**
 **Öncelik**: Orta  
 **Etiketler**: `enhancement`, `ui/ux`
 
@@ -84,7 +108,7 @@
 
 ---
 
-### Issue #5: 📊 Gelişmiş Raporlama
+### Issue #6: 📊 Gelişmiş Raporlama ⏳ **IN PROGRESS**
 **Öncelik**: Orta  
 **Etiketler**: `feature`, `reports`
 
@@ -97,11 +121,11 @@
 
 ## 🚀 **Düşük Öncelikli Issues**
 
-### Issue #6: 🔒 Güvenlik İyileştirmeleri
+### Issue #7: 🔒 Güvenlik İyileştirmeleri ⏳ **PLANNED**
 **Öncelik**: Düşük  
 **Etiketler**: `security`, `enhancement`
 
-### Issue #7: 📱 PWA Desteği
+### Issue #8: 📱 PWA Desteği ⏳ **PLANNED**
 **Öncelik**: Düşük  
 **Etiketler**: `feature`, `pwa`
 

@@ -65,7 +65,7 @@
             <div class="text-center">
                 <div class="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-purple-600 text-white rounded-full">1</div>
                 <h3 class="font-semibold mb-2">Kayıt Ol</h3>
-                <p class="text-gray-600 text-sm">6 haneli bir PIN oluşturarak hesabınızı güvence altına alın.</p>
+                <p class="text-gray-600 text-sm">4-8 haneli esnek PIN sistemi ile hesabınızı güvence altına alın.</p>
             </div>
             
             <div class="text-center">

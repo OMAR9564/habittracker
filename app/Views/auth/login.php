@@ -17,11 +17,11 @@
             </div>
             
             <div class="mb-6">
-                <label for="pin" class="block text-gray-700 font-medium mb-2">PIN Kodu (6 Haneli)</label>
+                <label for="pin" class="block text-gray-700 font-medium mb-2">PIN Kodu (4-8 Hane)</label>
                 <input type="password" name="pin" id="pin" 
                        class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                       minlength="6" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required>
-                <p class="mt-1 text-sm text-gray-500">6 haneli PIN kodunuzu girin.</p>
+                       minlength="4" maxlength="8" inputmode="numeric" pattern="[0-9]{4,8}" required>
+                <p class="mt-1 text-sm text-gray-500">PIN kodunuzu girin (4-8 hane).</p>
             </div>
             
             <div class="mb-6">

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * 🧠 Omar BYA - Authentication Controller
+ * 🤖 Optimized by O.B. - Enhanced PIN System (4-8 digits)
+ * Code aligned with Omar BYA's Personal Style Sheet
+ */
+
 namespace App\Controllers;
 
 use App\Models\UserModel;
@@ -77,12 +83,12 @@ class Auth extends BaseController
                     ]
                 ],
                 'pin' => [
-                    'rules' => 'required|exact_length[6]|numeric|max_length[6]',
+                    'rules' => 'required|min_length[4]|max_length[8]|numeric',
                     'errors' => [
                         'required' => 'PIN kodu alanı zorunludur.',
-                        'exact_length' => 'PIN kodu tam olarak {param} haneli olmalıdır.',
-                        'numeric' => 'PIN kodu sadece rakamlardan oluşmalıdır.',
-                        'max_length' => 'PIN kodu en fazla {param} karakter olabilir.'
+                        'min_length' => 'PIN kodu en az {param} haneli olmalıdır.',
+                        'max_length' => 'PIN kodu en fazla {param} haneli olabilir.',
+                        'numeric' => 'PIN kodu sadece rakamlardan oluşmalıdır.'
                     ]
                 ],
                 'confirm_pin' => [
