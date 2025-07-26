@@ -2,22 +2,63 @@
 /* 🤖 Optimized by O.B. - Complete redesign for modern experience */
 
 :root {
-  /* New Modern Color Palette */
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --secondary: #8b5cf6;
-  --accent: #06b6d4;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --dark: #1e293b;
-  --darker: #0f172a;
-  --light: #f8fafc;
-  --glass: rgba(255, 255, 255, 0.1);
-  --shadow: rgba(0, 0, 0, 0.1);
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border: rgba(148, 163, 184, 0.2);
+  /* 🎨 Omar BYA - Premium Color Palette v3.0 */
+  /* Primary Palette - Modern Tech */
+  --primary: #3b82f6; /* Bright Blue */
+  --primary-dark: #1d4ed8; /* Deep Blue */
+  --primary-light: #60a5fa; /* Light Blue */
+
+  /* Secondary Palette - Creative Purple */
+  --secondary: #8b5cf6; /* Violet */
+  --secondary-dark: #7c3aed; /* Deep Purple */
+  --secondary-light: #a78bfa; /* Light Purple */
+
+  /* Accent Colors - Premium Feel */
+  --accent: #06b6d4; /* Cyan */
+  --accent-warm: #f59e0b; /* Amber */
+  --accent-cool: #10b981; /* Emerald */
+
+  /* Status Colors - Clear Communication */
+  --success: #059669; /* Emerald 600 */
+  --success-light: #10b981; /* Emerald 500 */
+  --warning: #d97706; /* Amber 600 */
+  --warning-light: #f59e0b; /* Amber 500 */
+  --danger: #dc2626; /* Red 600 */
+  --danger-light: #ef4444; /* Red 500 */
+  --info: #0ea5e9; /* Sky 500 */
+
+  /* Neutral Palette - Professional */
+  --dark: #0f172a; /* Slate 900 */
+  --darker: #020617; /* Slate 950 */
+  --medium: #334155; /* Slate 700 */
+  --light: #f8fafc; /* Slate 50 */
+  --lighter: #ffffff; /* Pure White */
+
+  /* Glass & Effects */
+  --glass-primary: rgba(59, 130, 246, 0.15); /* Primary with transparency */
+  --glass-secondary: rgba(139, 92, 246, 0.15); /* Secondary with transparency */
+  --glass-neutral: rgba(255, 255, 255, 0.12); /* Neutral glass */
+  --glass-dark: rgba(15, 23, 42, 0.8); /* Dark glass */
+
+  /* Shadows - Depth & Elevation */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Text Colors - Readable Hierarchy */
+  --text-primary: #0f172a; /* Slate 900 */
+  --text-secondary: #475569; /* Slate 600 */
+  --text-tertiary: #64748b; /* Slate 500 */
+  --text-light: #ffffff; /* White */
+  --text-light-secondary: rgba(255, 255, 255, 0.8);
+  --text-light-tertiary: rgba(255, 255, 255, 0.6);
+
+  /* Border Colors */
+  --border-primary: rgba(148, 163, 184, 0.2); /* Slate 400 with opacity */
+  --border-light: rgba(255, 255, 255, 0.18); /* Light border */
+  --border-focus: var(--primary); /* Focus border */
 }
 
 /* Global Styles */
@@ -27,18 +68,65 @@
 
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%);
+  background-attachment: fixed;
   min-height: 100vh;
   color: var(--text-primary);
+  position: relative;
 }
 
-/* Glass Container */
+/* 🎨 Premium background overlay pattern */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(59, 130, 246, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(139, 92, 246, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(6, 182, 212, 0.1) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 🎨 Premium Glass Container */
 .glass-container {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  background: var(--glass-neutral);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-light),
+    transparent
+  );
+  opacity: 0.8;
 }
 
 /* Modern Dashboard Header */
@@ -57,7 +145,12 @@ body {
 }
 
 .dashboard-title {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -66,6 +159,7 @@ body {
   text-align: center;
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
 }
 
 .dashboard-subtitle {
@@ -400,51 +494,132 @@ body {
   box-shadow: 0 12px 35px rgba(6, 182, 212, 0.4);
 }
 
-/* Chart Section */
+/* 📊 Enhanced Chart Section - Mobile First */
 .chart-section {
-  padding: 1rem 2rem 2rem;
+  padding: 1rem 1.5rem 2rem;
   position: relative;
   z-index: 2;
-  display: block !important; /* 🔧 Always visible */
+  display: block !important;
   opacity: 1;
   visibility: visible;
+  border-top: 1px solid var(--border-light);
+  margin-top: 1rem;
 }
 
 .chart-container {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
+  background: var(--glass-neutral);
+  border-radius: 16px;
   padding: 1rem;
-  backdrop-filter: blur(5px);
-  height: 150px;
+  backdrop-filter: blur(8px);
+  height: 200px;
   overflow-x: auto;
   overflow-y: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  scroll-snap-type: x mandatory;
+  touch-action: pan-x;
 }
 
-/* 🔧 Enhanced scrollable charts */
+/* 🎨 Premium scrollbar styling */
 .chart-container::-webkit-scrollbar {
-  height: 6px;
+  height: 8px;
 }
 
 .chart-container::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: var(--glass-neutral);
+  border-radius: 12px;
+  margin: 0 8px;
 }
 
 .chart-container::-webkit-scrollbar-thumb {
   background: linear-gradient(90deg, var(--primary), var(--secondary));
-  border-radius: 10px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
 
 .chart-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(90deg, var(--primary-dark), var(--secondary));
+  background: linear-gradient(
+    90deg,
+    var(--primary-dark),
+    var(--secondary-dark)
+  );
+  transform: scaleY(1.2);
 }
 
-/* Chart canvas optimization */
+/* 📱 Mobile optimized chart canvas */
 .chart-container canvas {
-  min-width: 300px !important;
+  min-width: 400px !important;
   height: 100% !important;
+  scroll-snap-align: start;
+}
+
+/* 🔧 Chart navigation controls */
+.chart-controls {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+}
+
+.chart-period-selector {
+  display: flex;
+  background: var(--glass-neutral);
+  border-radius: 12px;
+  padding: 2px;
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.chart-period-btn {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 10px;
+}
+
+.chart-period-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--text-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-period-btn:hover:not(.active) {
+  background: var(--glass-primary);
+  color: var(--text-light);
+}
+
+/* Mobile chart improvements */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 180px;
+    padding: 0.75rem;
+  }
+
+  .chart-container canvas {
+    min-width: 350px !important;
+  }
+
+  .chart-section {
+    padding: 0.75rem 1rem 1.5rem;
+  }
+
+  .chart-controls {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .chart-period-btn {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+  }
 }
 
 /* 🤖 Optimized by O.B. - Chart visibility fixes */

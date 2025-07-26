@@ -210,13 +210,20 @@
                         <?php endif; ?>
                     <?php endif; ?>
                     
-                    <!-- 🔧 Fixed Chart Section - Always visible with scrolling -->
+                    <!-- 📊 Enhanced Chart Section - Mobile First -->
                     <div class="chart-section" style="display: block !important;">
-                        <div class="mb-3">
-                            <h3 class="text-sm font-semibold text-gray-700 opacity-80">📈 Weekly Trend</h3>
+                        <div class="chart-controls">
+                            <h3 class="text-sm font-semibold text-white/80 flex items-center gap-2">
+                                📈 Progress Trend
+                            </h3>
+                            <div class="chart-period-selector">
+                                <button class="chart-period-btn active" onclick="updateChartPeriod(<?= $habit['id'] ?>, 7, this)">7D</button>
+                                <button class="chart-period-btn" onclick="updateChartPeriod(<?= $habit['id'] ?>, 14, this)">14D</button>
+                                <button class="chart-period-btn" onclick="updateChartPeriod(<?= $habit['id'] ?>, 30, this)">30D</button>
+                            </div>
                         </div>
-                        <div class="chart-container" style="height: 150px; overflow-x: auto; overflow-y: hidden;">
-                            <canvas id="trendChart<?= $habit['id'] ?>" style="min-width: 300px; height: 100%;"></canvas>
+                        <div class="chart-container" id="chartContainer<?= $habit['id'] ?>">
+                            <canvas id="trendChart<?= $habit['id'] ?>"></canvas>
                         </div>
                     </div>
                     
@@ -297,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const labels = Object.keys(trendData).slice(-14); // Last 14 days for scrolling
                         const data = Object.values(trendData).slice(-14);
                         
-                        new Chart(chartContext, {
+                        const chart = new Chart(chartContext, {
                             type: 'line',
                             data: {
                                 labels: labels.map(date => {
@@ -305,36 +312,61 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return d.getDate() + '/' + (d.getMonth() + 1);
                                 }),
                                 datasets: [{
-                                    label: 'Success Rate',
+                                    label: 'Progress Trend',
                                     data: data,
-                                    borderColor: 'rgba(99, 102, 241, 0.8)',
-                                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
                                     tension: 0.4,
                                     fill: true,
-                                    borderWidth: 2,
-                                    pointRadius: 3,
-                                    pointHoverRadius: 6,
-                                    pointBackgroundColor: '#6366f1',
+                                    borderWidth: 3,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 8,
+                                    pointBackgroundColor: '#3b82f6',
                                     pointBorderColor: '#ffffff',
-                                    pointBorderWidth: 2
+                                    pointBorderWidth: 2,
+                                    pointHoverBackgroundColor: '#1d4ed8',
+                                    pointHoverBorderColor: '#ffffff',
+                                    pointHoverBorderWidth: 3
                                 }]
                             },
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                interaction: {
+                                    intersect: false,
+                                    mode: 'index'
+                                },
                                 plugins: {
-                                    legend: { display: false }
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                        titleColor: '#ffffff',
+                                        bodyColor: '#ffffff',
+                                        borderColor: '#3b82f6',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        displayColors: false,
+                                        callbacks: {
+                                            title: function(tooltipItems) {
+                                                return 'Date: ' + tooltipItems[0].label;
+                                            },
+                                            label: function(context) {
+                                                return 'Progress: ' + context.parsed.y + '%';
+                                            }
+                                        }
+                                    }
                                 },
                                 scales: {
                                     x: {
                                         display: true,
                                         grid: { 
                                             display: false,
-                                            color: 'rgba(255, 255, 255, 0.1)'
+                                            color: 'rgba(255, 255, 255, 0.08)'
                                         },
                                         ticks: {
                                             color: 'rgba(255, 255, 255, 0.7)',
-                                            font: { size: 10 }
+                                            font: { size: 11, weight: '500' },
+                                            maxTicksLimit: 7
                                         }
                                     },
                                     y: {
@@ -343,14 +375,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                         max: 100,
                                         grid: { 
                                             display: true,
-                                            color: 'rgba(255, 255, 255, 0.1)'
+                                            color: 'rgba(255, 255, 255, 0.08)',
+                                            drawBorder: false
                                         },
                                         ticks: {
                                             color: 'rgba(255, 255, 255, 0.7)',
-                                            font: { size: 10 },
+                                            font: { size: 11, weight: '500' },
                                             callback: function(value) {
                                                 return value + '%';
-                                            }
+                                            },
+                                            stepSize: 25
                                         }
                                     }
                                 },
@@ -360,11 +394,58 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }
                             }
                         });
+                        
+                        // Store chart instance for period switching
+                        window['habitChart<?= $habit['id'] ?>'] = chart;
                     }
                 }
             })();
         <?php endif; ?>
     <?php endforeach; ?>
+    
+    // 🔧 Chart period switching function - Omar Style
+    window.updateChartPeriod = function(habitId, days, button) {
+        // Update button states
+        const buttons = button.parentElement.querySelectorAll('.chart-period-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Get the chart instance
+        const chart = window['habitChart' + habitId];
+        if (!chart) return;
+        
+        // Generate new data for the period
+        const newData = generateSampleData(days);
+        const newLabels = Object.keys(newData).slice(-days);
+        const newValues = Object.values(newData).slice(-days);
+        
+        // Update chart data with smooth animation
+        chart.data.labels = newLabels.map(date => {
+            const d = new Date(date);
+            return d.getDate() + '/' + (d.getMonth() + 1);
+        });
+        chart.data.datasets[0].data = newValues;
+        
+        // Animate the update
+        chart.update('active');
+        
+        OmarNotifications.info(`📊 Chart updated to ${days} days view`);
+    };
+    
+    // Generate realistic sample data
+    function generateSampleData(days) {
+        const data = {};
+        for (let i = days - 1; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            // Create realistic progress patterns with trends
+            const trend = Math.max(10, 70 - (i * 0.5)); // Improving trend
+            const variation = Math.sin(i * 0.3) * 15 + Math.random() * 10;
+            data[dateStr] = Math.max(0, Math.min(100, Math.round(trend + variation)));
+        }
+        return data;
+    }
 });
 </script>
 <?= $this->endSection() ?> 

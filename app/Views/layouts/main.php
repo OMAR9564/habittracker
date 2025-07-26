@@ -57,36 +57,44 @@
         </nav>
     <?php endif; ?>
     
-    <!-- 📢 Flash Messages -->
-    <?php if (session()->getFlashdata('success')): ?>
-        <div class="mx-6 mb-6">
-            <div class="glass-container p-4 border-l-4 border-green-400 fade-in">
-                <div class="flex items-center">
-                    <div class="stat-icon bg-gradient-to-br from-green-400 to-green-600 text-white mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <p class="text-white font-medium"><?= session()->getFlashdata('success') ?></p>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
-    
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="mx-6 mb-6">
-            <div class="glass-container p-4 border-l-4 border-red-400 fade-in">
-                <div class="flex items-center">
-                    <div class="stat-icon bg-gradient-to-br from-red-400 to-red-600 text-white mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </div>
-                    <p class="text-white font-medium"><?= session()->getFlashdata('error') ?></p>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
+    <!-- 📢 Modern Toast Notifications - Omar Style -->
+    <script>
+    // 🤖 Optimized by O.B. - Auto-show flash messages as toasts
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php if (session()->getFlashdata('success')): ?>
+            setTimeout(() => {
+                OmarNotifications.success('<?= addslashes(session()->getFlashdata('success')) ?>');
+            }, 300);
+        <?php endif; ?>
+        
+        <?php if (session()->getFlashdata('error')): ?>
+            setTimeout(() => {
+                OmarNotifications.error('<?= addslashes(session()->getFlashdata('error')) ?>');
+            }, 300);
+        <?php endif; ?>
+        
+        <?php if (session()->getFlashdata('warning')): ?>
+            setTimeout(() => {
+                OmarNotifications.warning('<?= addslashes(session()->getFlashdata('warning')) ?>');
+            }, 300);
+        <?php endif; ?>
+        
+        <?php if (session()->getFlashdata('info')): ?>
+            setTimeout(() => {
+                OmarNotifications.info('<?= addslashes(session()->getFlashdata('info')) ?>');
+            }, 300);
+        <?php endif; ?>
+        
+        // Show validation errors as toasts
+        <?php if (isset($validation) && $validation->getErrors()): ?>
+            <?php foreach ($validation->getErrors() as $error): ?>
+                setTimeout(() => {
+                    OmarNotifications.error('<?= addslashes($error) ?>');
+                }, 300);
+            <?php endforeach; ?>
+        <?php endif; ?>
+    });
+    </script>
     
     <!-- 🎯 Main Content Area -->
     <main>

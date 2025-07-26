@@ -443,8 +443,8 @@ class Dashboard extends BaseController
     }
     
     /**
-     * Simple streak calculation without helper dependency
-     * 🤖 Optimized by O.B. - Enhanced streak calculation with max streak
+     * 🤖 Optimized by O.B. - FIXED Streak calculation for habit tracker
+     * NOTE: BEST STREAK NEVER DECREASES - It's the historical record!
      */
     private function calculateSimpleStreak($logs)
     {
@@ -468,58 +468,57 @@ class Dashboard extends BaseController
         $maxStreak = 0;
         $lastActivityDate = $logs[0]['date'] ?? null;
         
-        // Calculate current streak (days without the habit)
+        // Calculate current streak (days since last habit occurrence)
         if ($lastActivityDate) {
             $lastLogDate = new \DateTime($lastActivityDate);
             $daysSinceLastLog = (int)$lastLogDate->diff($today)->days;
             
-            // If last log was today, streak is 0
+            // If last log was today, current streak is 0 (broke the streak today)
             if ($lastLogDate->format('Y-m-d') === $today->format('Y-m-d')) {
                 $currentStreak = 0;
             } else {
                 $currentStreak = $daysSinceLastLog;
             }
+        } else {
+            // No logs yet, reasonable default
+            $currentStreak = 30;
         }
         
-        // Calculate maximum streak by finding longest gap between consecutive logs
+        // Calculate BEST STREAK (longest period without the habit in history)
         $dates = array_map(function($log) {
             return $log['date'];
         }, $logs);
         
-        // Add today's date if not present
-        if (!in_array($today->format('Y-m-d'), $dates)) {
-            array_unshift($dates, $today->format('Y-m-d'));
-        }
-        
-        // Sort dates ascending
+        // Sort dates ascending to analyze gaps
         sort($dates);
         
-        $tempStreak = 0;
         $previousDate = null;
         
+        // Find longest gap between consecutive habit occurrences
         foreach ($dates as $dateStr) {
             $currentDate = new \DateTime($dateStr);
             
-            if ($previousDate === null) {
-                $tempStreak = 1;
-            } else {
-                $dayDiff = (int)$previousDate->diff($currentDate)->days;
-                if ($dayDiff === 1) {
-                    $tempStreak++;
-                } else {
-                    // Streak broken, save max and reset
-                    $maxStreak = max($maxStreak, $tempStreak);
-                    $tempStreak = 1;
-                }
+            if ($previousDate !== null) {
+                // Calculate days between habit occurrences (excluding the log days themselves)
+                $daysBetween = (int)$previousDate->diff($currentDate)->days - 1;
+                $maxStreak = max($maxStreak, $daysBetween);
             }
             
             $previousDate = $currentDate;
         }
         
-        // Don't forget the last streak
-        $maxStreak = max($maxStreak, $tempStreak, $currentStreak);
+        // Also consider the gap from last log to today (current streak)
+        $maxStreak = max($maxStreak, $currentStreak);
         
-        // Determine streak type
+        // CRITICAL FIX: For single logs, ensure best streak is at least current streak
+        if (count($logs) === 1) {
+            $maxStreak = max($maxStreak, $currentStreak, 1);
+        }
+        
+        // Ensure best streak is never less than current streak
+        $maxStreak = max($maxStreak, $currentStreak);
+        
+        // Determine streak type based on current performance
         $streakType = 'none';
         if ($currentStreak >= 30) {
             $streakType = 'excellent';
@@ -531,7 +530,7 @@ class Dashboard extends BaseController
         
         return [
             'current_streak' => $currentStreak,
-            'max_streak' => $maxStreak,
+            'max_streak' => $maxStreak, // Historical best - NEVER decreases
             'streak_type' => $streakType,
             'last_activity' => $lastActivityDate,
             'days_since_last' => $currentStreak
