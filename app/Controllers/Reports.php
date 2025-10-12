@@ -463,8 +463,8 @@ class Reports extends BaseController
                 $totalCount = array_sum(array_column($dayLogs, 'count'));
                 $progressScore = max(0, $progressScore - $totalCount);
             } else {
-                // Kayıt yoksa, 1 puan art
-                $progressScore = $progressScore + 1;
+                // Kayıt yoksa, 1 puan art (maksimum 100)
+                $progressScore = min(100, $progressScore + 1);
             }
             
             $data[] = $progressScore;
@@ -595,25 +595,31 @@ class Reports extends BaseController
     
     /**
      * NOTE: Export habit report as PDF with Chart
-     * 🧠 Omar BYA - Enhanced PDF export with Progress Trend chart
+     * 🧠 Omar BYA - Real PDF export with Progress Trend chart using DomPDF
      */
     private function exportHabitReportPdf($habit, $reportData, $dateRange, $period)
     {
         // Progress Trend chart data oluştur
         $chartData = $this->generateChartData($habit['id'], $dateRange['start'], $dateRange['end']);
         
-        // HTML raporu oluştur (grafik dahil)
-        $html = $this->generateReportHtmlWithChart($habit, $reportData, $dateRange, $period, $chartData);
+        // PDF için HTML oluştur (SVG grafik ile)
+        $html = $this->generatePdfHtmlWithChart($habit, $reportData, $dateRange, $period, $chartData);
         
-        $filename = 'aliskanlik_raporu_' . $habit['name'] . '_' . $period . '_' . date('Y-m-d') . '.html';
+        // DomPDF kullanarak PDF oluştur
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape'); // Yatay yapıldı
+        $dompdf->render();
+        
+        $filename = 'aliskanlik_raporu_' . $habit['name'] . '_' . $period . '_' . date('Y-m-d') . '.pdf';
         
         $this->response
-            ->setContentType('text/html')
+            ->setContentType('application/pdf')
             ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->setHeader('Pragma', 'no-cache')
             ->setHeader('Expires', '0');
         
-        return $this->response->setBody($html);
+        return $this->response->setBody($dompdf->output());
     }
     
     /**
@@ -1021,5 +1027,272 @@ class Reports extends BaseController
         }
         
         return implode("\n", $csvLines);
+    }
+    
+    /**
+     * NOTE: Generate PDF HTML with SVG Chart
+     * 🧠 Omar BYA - PDF için SVG tabanlı line chart
+     */
+    private function generatePdfHtmlWithChart($habit, $reportData, $dateRange, $period, $chartData)
+    {
+        $periodNames = [
+            '1month' => '1 Aylık',
+            '3months' => '3 Aylık',
+            '6months' => '6 Aylık',
+            '1year' => '1 Yıllık',
+            'all' => 'Tümü'
+        ];
+        
+        // SVG Line Chart oluştur
+        $svgChart = $this->generateSvgLineChart($chartData);
+        
+        $html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>' . $habit['name'] . ' - Performans Raporu</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 10px; 
+            color: #333;
+            font-size: 11px;
+            width: 100%;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 20px; 
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        .stats { 
+            display: table;
+            width: 100%;
+            margin: 15px 0;
+        }
+        .stat-box { 
+            display: table-cell;
+            text-align: center; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            margin: 3px;
+            background: #f8f9fa;
+            width: 25%;
+        }
+        .stat-value { 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: #2c3e50; 
+            margin-bottom: 3px;
+        }
+        .stat-label { 
+            font-size: 10px; 
+            color: #7f8c8d; 
+        }
+        .chart-section {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .chart-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            background: white;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 6px; 
+            text-align: left; 
+            font-size: 9px;
+        }
+        th { 
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 ' . $habit['name'] . ' - Performans Raporu</h1>
+        <p>Rapor Dönemi: ' . $periodNames[$period] . ' (' . $dateRange['start'] . ' - ' . $dateRange['end'] . ')</p>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-value">' . $reportData['stats']['success_rate'] . '%</div>
+            <div class="stat-label">Başarı Oranı</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">' . $reportData['stats']['active_days'] . '</div>
+            <div class="stat-label">Aktif Gün</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">' . $reportData['stats']['longest_streak'] . '</div>
+            <div class="stat-label">En Uzun Seri</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">' . $reportData['stats']['current_streak'] . '</div>
+            <div class="stat-label">Mevcut Seri</div>
+        </div>
+    </div>
+    
+    <div class="chart-section">
+        ' . $svgChart . '
+        <p style="text-align: center; color: #7f8c8d; font-style: italic; font-size: 10px; margin-top: 10px;">
+            0\'dan başlar, her gün artar (maksimum 100). 100\'e gelince orada kalır, yeni kayıt eklenene kadar 100\'de sabit kalır. Kayıt olan günlerde kayıt sayısı kadar düşer.
+        </p>
+    </div>
+    
+    <h3 style="color: #2c3e50; margin-top: 30px; font-size: 16px;">📋 Günlük Kayıtlar</h3>
+    <table>
+        <tr>
+            <th>Tarih</th>
+            <th>Kayıt Sayısı</th>
+            <th>Notlar</th>
+        </tr>';
+        
+        foreach ($reportData['logs'] as $log) {
+            $html .= '<tr>
+                <td>' . $log['date'] . '</td>
+                <td>' . $log['count'] . '</td>
+                <td>' . ($log['notes'] ?? '') . '</td>
+            </tr>';
+        }
+        
+        $html .= '</table>
+        
+        <div class="footer">
+            <p>Rapor Oluşturulma Tarihi: ' . date('d.m.Y H:i') . '</p>
+            <p>Habit Tracker 3.0 - Omar BYA Development</p>
+        </div>
+    </div>
+</body>
+</html>';
+        
+        return $html;
+    }
+    
+    /**
+     * NOTE: Generate Line Chart for PDF using HTML/CSS
+     * 🧠 Omar BYA - PDF için HTML/CSS tabanlı line chart
+     */
+    private function generateSvgLineChart($chartData)
+    {
+        $labels = $chartData['labels'];
+        $data = $chartData['datasets'][0]['data'];
+        
+        if (empty($data)) {
+            return '<div style="text-align: center; padding: 50px; color: #999;">Veri bulunamadı</div>';
+        }
+        
+        $minValue = min($data);
+        $maxValue = max($data);
+        $valueRange = $maxValue - $minValue;
+        if ($valueRange == 0) $valueRange = 1;
+        
+        $chartWidth = 700; // Yatay için daha geniş
+        $chartHeight = 300; // Daha yüksek
+        $padding = 40;
+        
+        // Line chart container
+        $html = '<div style="border: 1px solid #ddd; padding: 20px; background: white; margin: 10px 0; position: relative;">';
+        $html .= '<h4 style="text-align: center; margin: 0 0 20px 0; color: #2c3e50;">📈 Progress Trend Line Chart</h4>';
+        
+        // Chart area
+        $html .= '<div style="position: relative; width: ' . $chartWidth . 'px; height: ' . $chartHeight . 'px; margin: 0 auto; border: 1px solid #e0e0e0; background: #fafafa;">';
+        
+        // Y-axis labels
+        for ($i = 0; $i <= 5; $i++) {
+            $y = $padding + (($chartHeight - $padding * 2) / 5) * $i;
+            $value = $maxValue - ($valueRange / 5) * $i;
+            $html .= '<div style="position: absolute; left: 5px; top: ' . ($y - 8) . 'px; font-size: 10px; color: #666;">' . round($value) . '</div>';
+        }
+        
+        // X-axis labels
+        $labelCount = count($labels);
+        for ($i = 0; $i < $labelCount; $i++) {
+            if ($i % max(1, floor($labelCount / 6)) == 0) { // Maksimum 6 etiket
+                $x = $padding + (($chartWidth - $padding * 2) / ($labelCount - 1)) * $i;
+                $html .= '<div style="position: absolute; left: ' . ($x - 15) . 'px; bottom: 5px; font-size: 9px; color: #666;">' . $labels[$i] . '</div>';
+            }
+        }
+        
+        // Grid lines
+        for ($i = 0; $i <= 5; $i++) {
+            $y = $padding + (($chartHeight - $padding * 2) / 5) * $i;
+            $html .= '<div style="position: absolute; left: ' . $padding . 'px; top: ' . $y . 'px; width: ' . ($chartWidth - $padding * 2) . 'px; height: 1px; background: #e0e0e0;"></div>';
+        }
+        
+        // Line chart using positioned divs
+        $points = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $x = $padding + (($chartWidth - $padding * 2) / (count($data) - 1)) * $i;
+            $y = $padding + ($chartHeight - $padding * 2) - (($data[$i] - $minValue) / $valueRange) * ($chartHeight - $padding * 2);
+            $points[] = ['x' => $x, 'y' => $y, 'value' => $data[$i]];
+        }
+        
+        // Draw lines between points
+        for ($i = 0; $i < count($points) - 1; $i++) {
+            $x1 = $points[$i]['x'];
+            $y1 = $points[$i]['y'];
+            $x2 = $points[$i + 1]['x'];
+            $y2 = $points[$i + 1]['y'];
+            
+            // Calculate line length and angle
+            $length = sqrt(pow($x2 - $x1, 2) + pow($y2 - $y1, 2));
+            $angle = atan2($y2 - $y1, $x2 - $x1) * 180 / pi();
+            
+            $html .= '<div style="position: absolute; left: ' . $x1 . 'px; top: ' . $y1 . 'px; width: ' . $length . 'px; height: 2px; background: #6366f1; transform-origin: 0 0; transform: rotate(' . $angle . 'deg);"></div>';
+        }
+        
+        $html .= '</div>'; // End chart area
+        
+        // Legend
+        $html .= '<div style="margin-top: 15px; text-align: center; font-size: 10px; color: #666;">';
+        $html .= '<div style="display: inline-block; margin: 0 20px;"><span style="display: inline-block; width: 12px; height: 2px; background: #6366f1; margin-right: 5px;"></span>Progress Trend</div>';
+        $html .= '<div style="display: inline-block; margin: 0 20px;"><strong>Min:</strong> ' . round($minValue, 1) . '</div>';
+        $html .= '<div style="display: inline-block; margin: 0 20px;"><strong>Max:</strong> ' . round($maxValue, 1) . '</div>';
+        $html .= '<div style="display: inline-block; margin: 0 20px;"><strong>Ortalama:</strong> ' . round(array_sum($data) / count($data), 1) . '</div>';
+        $html .= '</div>';
+        
+        $html .= '</div>'; // End container
+        
+        return $html;
     }
 } 
