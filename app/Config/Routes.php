@@ -50,6 +50,17 @@ $routes->group('dashboard', function ($routes) {
     $routes->post('habit/(:num)/log', 'Dashboard::logHabit/$1');
     $routes->get('habit/(:num)/delete', 'Dashboard::deleteHabit/$1');
     $routes->get('habit/(:num)/refresh', 'Dashboard::refreshHabitData/$1');
+    
+    // 🧠 Omar BYA - Habit Reports Routes
+    $routes->get('habit/(:num)/reports', 'Reports::habitReports/$1');
+    $routes->get('habit/(:num)/reports/export', 'Reports::exportHabitReport/$1');
+    $routes->get('habit/(:num)/reports/chart-data', 'Reports::getHabitChartData/$1');
+});
+
+// Reports routes
+$routes->group('reports', function ($routes) {
+    $routes->get('/', 'Reports::index');
+    $routes->get('export/csv', 'Reports::exportCsv');
 });
 
 /*

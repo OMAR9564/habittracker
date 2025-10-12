@@ -80,7 +80,7 @@ class HabitLogModel extends Model
         return $this->where('habit_id', $habitId)
                    ->where('date >=', $startDate)
                    ->where('date <=', $endDate)
-                   ->orderBy('date', 'DESC')
+                   ->orderBy('date', 'ASC') // ASC olarak değiştirildi - seri hesaplamaları için
                    ->findAll();
     }
     
