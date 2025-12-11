@@ -47,10 +47,10 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
-  /* Text Colors - Readable Hierarchy */
-  --text-primary: #0f172a; /* Slate 900 */
-  --text-secondary: #475569; /* Slate 600 */
-  --text-tertiary: #64748b; /* Slate 500 */
+  /* Text Colors - Dark Mode Optimized */
+  --text-primary: #f8fafc; /* Slate 50 - Light text for dark backgrounds */
+  --text-secondary: rgba(255, 255, 255, 0.8); /* Light secondary */
+  --text-tertiary: rgba(255, 255, 255, 0.6); /* Light tertiary */
   --text-light: #ffffff; /* White */
   --text-light-secondary: rgba(255, 255, 255, 0.8);
   --text-light-tertiary: rgba(255, 255, 255, 0.6);
@@ -164,7 +164,7 @@ body::before {
 
 .dashboard-subtitle {
   text-align: center;
-  color: rgba(30, 41, 59, 0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 1.1rem;
   font-weight: 500;
 }
@@ -240,7 +240,7 @@ body::before {
 .stat-value {
   font-size: 2.5rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
@@ -250,7 +250,7 @@ body::before {
 
 .stat-label {
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -314,7 +314,7 @@ body::before {
 .habit-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 0.5rem;
 }
 
@@ -362,7 +362,7 @@ body::before {
 
 .streak-current-label {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -394,13 +394,13 @@ body::before {
 .progress-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .progress-value {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .progress-bar {
@@ -670,13 +670,13 @@ body::before {
 .empty-title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 
 .empty-subtitle {
   font-size: 1.1rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 2rem;
   line-height: 1.6;
 }

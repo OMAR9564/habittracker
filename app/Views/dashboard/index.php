@@ -132,7 +132,7 @@
                         </div>
                         
                         <?php if (!empty($habit['description'])): ?>
-                            <p class="text-gray-600 text-sm opacity-90"><?= esc($habit['description']) ?></p>
+                            <p class="text-gray-300 text-sm opacity-90"><?= esc($habit['description']) ?></p>
                         <?php endif; ?>
                     </div>
                     
@@ -278,55 +278,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }, index * 200);
     });
     
-    // 🔧 Enhanced Chart System with scrolling
+    // 🔧 Enhanced Chart System with real data
     <?php foreach ($habits as $habit): ?>
-        <?php if (!empty($habit['trend_data']) || true): // Always create charts ?>
+        <?php if (!empty($habit['trend_data'])): ?>
             (function() {
                 const ctx = document.getElementById('trendChart<?= $habit['id'] ?>');
                 if (ctx && typeof Chart !== 'undefined') {
                     const chartContext = ctx.getContext('2d');
                     
-                    // Generate sample data if no trend_data exists
-                    let trendData = <?= !empty($habit['trend_data']) ? json_encode($habit['trend_data']) : 'null' ?>;
-                    
-                    if (!trendData) {
-                        // Generate last 7 days sample data
-                        trendData = {};
-                        for (let i = 6; i >= 0; i--) {
-                            const date = new Date();
-                            date.setDate(date.getDate() - i);
-                            const dateStr = date.toISOString().split('T')[0];
-                            trendData[dateStr] = Math.floor(Math.random() * 100);
-                        }
-                    }
+                    // Use real trend_data from habit
+                    let trendData = <?= json_encode($habit['trend_data']) ?>;
                     
                     if (trendData && Object.keys(trendData).length > 0) {
-                        const labels = Object.keys(trendData).slice(-14); // Last 14 days for scrolling
+                        const labels = Object.keys(trendData).slice(-14); // Last 14 days
                         const data = Object.values(trendData).slice(-14);
                         
                         const chart = new Chart(chartContext, {
-                            type: 'line',
+                            type: 'bar',
                             data: {
                                 labels: labels.map(date => {
                                     const d = new Date(date);
                                     return d.getDate() + '/' + (d.getMonth() + 1);
                                 }),
                                 datasets: [{
-                                    label: 'Progress Trend',
+                                    label: 'Günlük Kayıt',
                                     data: data,
+                                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
                                     borderColor: '#3b82f6',
-                                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                                    tension: 0.4,
-                                    fill: true,
-                                    borderWidth: 3,
-                                    pointRadius: 4,
-                                    pointHoverRadius: 8,
-                                    pointBackgroundColor: '#3b82f6',
-                                    pointBorderColor: '#ffffff',
-                                    pointBorderWidth: 2,
-                                    pointHoverBackgroundColor: '#1d4ed8',
-                                    pointHoverBorderColor: '#ffffff',
-                                    pointHoverBorderWidth: 3
+                                    borderWidth: 2,
+                                    borderRadius: 6,
+                                    borderSkipped: false
                                 }]
                             },
                             options: {
@@ -348,10 +329,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                         displayColors: false,
                                         callbacks: {
                                             title: function(tooltipItems) {
-                                                return 'Date: ' + tooltipItems[0].label;
+                                                return 'Tarih: ' + tooltipItems[0].label;
                                             },
                                             label: function(context) {
-                                                return 'Progress: ' + context.parsed.y + '%';
+                                                return 'Kayıt: ' + context.parsed.y;
                                             }
                                         }
                                     }
@@ -360,19 +341,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                     x: {
                                         display: true,
                                         grid: { 
-                                            display: false,
-                                            color: 'rgba(255, 255, 255, 0.08)'
+                                            display: false
                                         },
                                         ticks: {
                                             color: 'rgba(255, 255, 255, 0.7)',
-                                            font: { size: 11, weight: '500' },
+                                            font: { size: 10, weight: '500' },
                                             maxTicksLimit: 7
                                         }
                                     },
                                     y: {
                                         display: true,
                                         beginAtZero: true,
-                                        max: 100,
                                         grid: { 
                                             display: true,
                                             color: 'rgba(255, 255, 255, 0.08)',
@@ -380,17 +359,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                         },
                                         ticks: {
                                             color: 'rgba(255, 255, 255, 0.7)',
-                                            font: { size: 11, weight: '500' },
-                                            callback: function(value) {
-                                                return value + '%';
-                                            },
-                                            stepSize: 25
+                                            font: { size: 10, weight: '500' },
+                                            stepSize: 1
                                         }
                                     }
-                                },
-                                interaction: {
-                                    intersect: false,
-                                    mode: 'index'
                                 }
                             }
                         });
@@ -400,10 +372,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             })();
+        <?php else: ?>
+            // No trend_data available for habit <?= $habit['id'] ?>, show empty state
+            (function() {
+                const container = document.getElementById('chartContainer<?= $habit['id'] ?>');
+                if (container) {
+                    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-size:12px;">📊 Henüz veri yok</div>';
+                }
+            })();
         <?php endif; ?>
     <?php endforeach; ?>
     
-    // 🔧 Chart period switching function - Omar Style
+    // 🔧 Chart period switching function - simplified for real data
     window.updateChartPeriod = function(habitId, days, button) {
         // Update button states
         const buttons = button.parentElement.querySelectorAll('.chart-period-btn');
@@ -412,40 +392,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Get the chart instance
         const chart = window['habitChart' + habitId];
-        if (!chart) return;
+        if (!chart) {
+            OmarNotifications.info('📊 Detaylı görünüm için Raporlar sayfasını kullanın');
+            return;
+        }
         
-        // Generate new data for the period
-        const newData = generateSampleData(days);
-        const newLabels = Object.keys(newData).slice(-days);
-        const newValues = Object.values(newData).slice(-days);
+        // Get existing data and slice to match days
+        const allLabels = chart.data.labels;
+        const allData = chart.data.datasets[0].data;
         
-        // Update chart data with smooth animation
-        chart.data.labels = newLabels.map(date => {
-            const d = new Date(date);
-            return d.getDate() + '/' + (d.getMonth() + 1);
-        });
-        chart.data.datasets[0].data = newValues;
+        // Show last N days from available data
+        const startIndex = Math.max(0, allLabels.length - days);
+        chart.data.labels = allLabels.slice(startIndex);
+        chart.data.datasets[0].data = allData.slice(startIndex);
         
         // Animate the update
         chart.update('active');
         
-        OmarNotifications.info(`📊 Chart updated to ${days} days view`);
+        OmarNotifications.info(`📊 ${days} günlük görünüm`);
     };
-    
-    // Generate realistic sample data
-    function generateSampleData(days) {
-        const data = {};
-        for (let i = days - 1; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            const dateStr = date.toISOString().split('T')[0];
-            // Create realistic progress patterns with trends
-            const trend = Math.max(10, 70 - (i * 0.5)); // Improving trend
-            const variation = Math.sin(i * 0.3) * 15 + Math.random() * 10;
-            data[dateStr] = Math.max(0, Math.min(100, Math.round(trend + variation)));
-        }
-        return data;
-    }
 });
 </script>
 <?= $this->endSection() ?> 

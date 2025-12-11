@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                         <?= esc($habit['name']) ?>
                     </h1>
-                    <p class="text-gray-600 mt-1"><?= esc($habit['description'] ?? 'No description') ?></p>
+                    <p class="text-gray-300 mt-1"><?= esc($habit['description'] ?? 'No description') ?></p>
                 </div>
             </div>
             

@@ -418,8 +418,8 @@ class Reports extends BaseController
     }
     
     /**
-     * NOTE: Generate chart data for visualization - Enhanced Progress Trend Style
-     * 🧠 Omar BYA - İlk kayıttan başlayan, kayıt sayısına göre düşen grafik
+     * NOTE: Generate chart data for visualization - Inverse Trend (Stress/Load)
+     * 🧠 Omar BYA - Kayıt yoksa artan (+), varsa azalan (-) grafik
      */
     private function generateChartData($habitId, $startDate, $endDate)
     {
@@ -431,7 +431,8 @@ class Reports extends BaseController
             if ($firstLog) {
                 $startDate = $firstLog['date'];
             } else {
-                $startDate = date('Y-m-d', strtotime('-30 days')); // Varsayılan
+                // Eğer hiç kayıt yoksa ve "tümü" seçildiyse varsayılan 30 gün
+                $startDate = date('Y-m-d', strtotime('-30 days'));
             }
         }
         
@@ -440,14 +441,15 @@ class Reports extends BaseController
         // Tarih aralığını oluştur
         $start = new \DateTime($startDate);
         $end = new \DateTime($endDate);
+        $end->modify('+1 day'); // Include end date
         $interval = new \DateInterval('P1D');
         $dateRange = new \DatePeriod($start, $interval, $end);
         
         $labels = [];
         $data = [];
         
-        // Progress Trend: 0'dan başla, her gün art, kayıt olan günlerde kayıt sayısı kadar düş
-        $progressScore = 0;
+        // Inverse Trend Logic
+        $currentScore = 0;
         
         foreach ($dateRange as $date) {
             $dateStr = $date->format('Y-m-d');
@@ -459,33 +461,32 @@ class Reports extends BaseController
             });
             
             if (!empty($dayLogs)) {
-                // Kayıt varsa, kayıt sayısı kadar düş
-                $totalCount = array_sum(array_column($dayLogs, 'count'));
-                $progressScore = max(0, $progressScore - $totalCount);
+                // Kayıt VARSA düş (Down)
+                // Her kayıt için -1 (veya sabit -1 mi? Kullanıcı 'bir tane dussun' dedi)
+                // Basit mantık: Kayıt olan gün -1
+                $currentScore -= 1;
             } else {
-                // Kayıt yoksa, 1 puan art (maksimum 100)
-                $progressScore = min(100, $progressScore + 1);
+                // Kayıt YOKSA art (Up)
+                $currentScore += 1;
             }
             
-            $data[] = $progressScore;
+            // Add to data points
+            $data[] = $currentScore;
         }
         
         return [
             'labels' => $labels,
             'datasets' => [
                 [
-                    'label' => 'Progress Trend',
+                    'label' => 'Trend Skoru',
                     'data' => $data,
-                    'borderColor' => 'rgba(99, 102, 241, 1)',
-                    'backgroundColor' => 'rgba(99, 102, 241, 0.2)',
-                    'tension' => 0.4,
-                    'fill' => true,
+                    'borderColor' => '#ef4444', // Red-500 (Stress/Load indicator color)
+                    'backgroundColor' => 'rgba(239, 68, 68, 0.2)', // Red-500 with opacity
                     'borderWidth' => 3,
-                    'pointRadius' => 4,
-                    'pointHoverRadius' => 8,
-                    'pointBackgroundColor' => '#6366f1',
-                    'pointBorderColor' => '#ffffff',
-                    'pointBorderWidth' => 2
+                    'tension' => 0.4, // Smooth curves
+                    'fill' => true,
+                    'pointRadius' => 0,
+                    'pointHoverRadius' => 6
                 ]
             ]
         ];
@@ -1052,8 +1053,13 @@ class Reports extends BaseController
     <meta charset="UTF-8">
     <title>' . $habit['name'] . ' - Performans Raporu</title>
     <style>
+        @font-face {
+            font-family: "DejaVu Sans";
+            font-style: normal;
+            font-weight: normal;
+        }
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: "DejaVu Sans", Arial, sans-serif; 
             margin: 10px; 
             color: #333;
             font-size: 11px;
@@ -1175,7 +1181,7 @@ class Reports extends BaseController
     <div class="chart-section">
         ' . $svgChart . '
         <p style="text-align: center; color: #7f8c8d; font-style: italic; font-size: 10px; margin-top: 10px;">
-            0\'dan başlar, her gün artar (maksimum 100). 100\'e gelince orada kalır, yeni kayıt eklenene kadar 100\'de sabit kalır. Kayıt olan günlerde kayıt sayısı kadar düşer.
+            Kayıt/Uygulama olmayan günlerde grafik yükselir (+), uygulanan günlerde düşer (-). Düşüş trendi düzenliliği gösterir.
         </p>
     </div>
     
@@ -1232,7 +1238,7 @@ class Reports extends BaseController
         
         // Line chart container
         $html = '<div style="border: 1px solid #ddd; padding: 20px; background: white; margin: 10px 0; position: relative;">';
-        $html .= '<h4 style="text-align: center; margin: 0 0 20px 0; color: #2c3e50;">📈 Progress Trend Line Chart</h4>';
+        $html .= '<h4 style="text-align: center; margin: 0 0 20px 0; color: #2c3e50;">📈 Trend Analizi</h4>';
         
         // Chart area
         $html .= '<div style="position: relative; width: ' . $chartWidth . 'px; height: ' . $chartHeight . 'px; margin: 0 auto; border: 1px solid #e0e0e0; background: #fafafa;">';
@@ -1278,14 +1284,14 @@ class Reports extends BaseController
             $length = sqrt(pow($x2 - $x1, 2) + pow($y2 - $y1, 2));
             $angle = atan2($y2 - $y1, $x2 - $x1) * 180 / pi();
             
-            $html .= '<div style="position: absolute; left: ' . $x1 . 'px; top: ' . $y1 . 'px; width: ' . $length . 'px; height: 2px; background: #6366f1; transform-origin: 0 0; transform: rotate(' . $angle . 'deg);"></div>';
+            $html .= '<div style="position: absolute; left: ' . $x1 . 'px; top: ' . $y1 . 'px; width: ' . $length . 'px; height: 2px; background: #818cf8; transform-origin: 0 0; transform: rotate(' . $angle . 'deg);"></div>';
         }
         
         $html .= '</div>'; // End chart area
         
         // Legend
         $html .= '<div style="margin-top: 15px; text-align: center; font-size: 10px; color: #666;">';
-        $html .= '<div style="display: inline-block; margin: 0 20px;"><span style="display: inline-block; width: 12px; height: 2px; background: #6366f1; margin-right: 5px;"></span>Progress Trend</div>';
+        $html .= '<div style="display: inline-block; margin: 0 20px;"><span style="display: inline-block; width: 12px; height: 2px; background: #ef4444; margin-right: 5px;"></span>Trend Skoru</div>';
         $html .= '<div style="display: inline-block; margin: 0 20px;"><strong>Min:</strong> ' . round($minValue, 1) . '</div>';
         $html .= '<div style="display: inline-block; margin: 0 20px;"><strong>Max:</strong> ' . round($maxValue, 1) . '</div>';
         $html .= '<div style="display: inline-block; margin: 0 20px;"><strong>Ortalama:</strong> ' . round(array_sum($data) / count($data), 1) . '</div>';

@@ -55,60 +55,80 @@
     </div>
 
     <!-- 📈 Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="glass-container p-6 text-center">
-            <div class="text-3xl font-bold text-green-400 mb-2"><?= $reportData['stats']['success_rate'] ?>%</div>
-            <div class="text-gray-300 text-sm">Başarı Oranı</div>
-            <div class="w-full bg-gray-700 rounded-full h-2 mt-3">
-                <div class="bg-gradient-to-r from-green-400 to-emerald-400 h-2 rounded-full" style="width: <?= $reportData['stats']['success_rate'] ?>%"></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <div class="glass-container p-4 sm:p-6 text-center">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="text-2xl sm:text-3xl font-bold text-green-400 mb-2"><?= $reportData['stats']['success_rate'] ?>%</div>
+            <div class="text-gray-300 text-xs sm:text-sm">Başarı Oranı</div>
+            <div class="w-full bg-gray-700 rounded-full h-1.5 sm:h-2 mt-3">
+                <div class="bg-gradient-to-r from-green-400 to-emerald-400 h-1.5 sm:h-2 rounded-full" style="width: <?= $reportData['stats']['success_rate'] ?>%"></div>
             </div>
         </div>
         
-        <div class="glass-container p-6 text-center">
-            <div class="text-3xl font-bold text-blue-400 mb-2"><?= $reportData['stats']['active_days'] ?></div>
-            <div class="text-gray-300 text-sm">Aktif Gün</div>
-            <div class="text-xs text-gray-400 mt-1"><?= $reportData['stats']['total_days'] ?> günden</div>
+        <div class="glass-container p-4 sm:p-6 text-center">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div class="text-2xl sm:text-3xl font-bold text-blue-400 mb-2"><?= $reportData['stats']['active_days'] ?></div>
+            <div class="text-gray-300 text-xs sm:text-sm">Aktif Gün</div>
+            <div class="text-[10px] sm:text-xs text-gray-400 mt-1"><?= $reportData['stats']['total_days'] ?> günden</div>
         </div>
         
-        <div class="glass-container p-6 text-center">
-            <div class="text-3xl font-bold text-purple-400 mb-2"><?= $reportData['stats']['longest_streak'] ?></div>
-            <div class="text-gray-300 text-sm">En Uzun Seri</div>
-            <div class="text-xs text-gray-400 mt-1">gün üst üste</div>
+        <div class="glass-container p-4 sm:p-6 text-center">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 bg-gradient-to-r from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+            </div>
+            <div class="text-2xl sm:text-3xl font-bold text-purple-400 mb-2"><?= $reportData['stats']['longest_streak'] ?></div>
+            <div class="text-gray-300 text-xs sm:text-sm">En Uzun Seri</div>
+            <div class="text-[10px] sm:text-xs text-gray-400 mt-1">gün üst üste</div>
         </div>
         
-        <div class="glass-container p-6 text-center">
-            <div class="text-3xl font-bold text-orange-400 mb-2"><?= $reportData['stats']['current_streak'] ?></div>
-            <div class="text-gray-300 text-sm">Mevcut Seri</div>
-            <div class="text-xs text-gray-400 mt-1">gün devam ediyor</div>
+        <div class="glass-container p-4 sm:p-6 text-center">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                </svg>
+            </div>
+            <div class="text-2xl sm:text-3xl font-bold text-orange-400 mb-2"><?= $reportData['stats']['current_streak'] ?></div>
+            <div class="text-gray-300 text-xs sm:text-sm">Mevcut Seri</div>
+            <div class="text-[10px] sm:text-xs text-gray-400 mt-1">gün devam ediyor</div>
         </div>
     </div>
 
     <!-- 📊 Chart Section -->
-    <div class="glass-container p-8 mb-8">
-        <div class="flex justify-between items-center mb-6">
+    <div class="glass-container p-4 sm:p-8 mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2">
             <div>
-                <h2 class="text-2xl font-bold text-white">📈 Progress Trend</h2>
-                <p class="text-sm text-gray-400 mt-1">
-                    0'dan başlar, her gün artar. Kayıt olan günlerde kayıt sayısı kadar düşer. Yüksek değerler daha iyi performans gösterir.
+                <h2 class="text-xl sm:text-2xl font-bold text-white">📈 Trend Analizi</h2>
+                <p class="text-xs sm:text-sm text-gray-400 mt-1">
+                    Kayıt yapılmayan günlerde artan (+), yapılan günlerde azalan (-) grafik
                 </p>
             </div>
-            <div class="text-sm text-gray-400">
+            <div class="text-xs sm:text-sm text-gray-400">
                 <?= date('d.m.Y', strtotime($dateRange['start'])) ?> - <?= date('d.m.Y', strtotime($dateRange['end'])) ?>
             </div>
         </div>
         
-        <div class="relative h-96">
+        <div class="relative h-64 sm:h-96">
             <canvas id="performanceChart"></canvas>
         </div>
         
         <!-- Chart Legend -->
-        <div class="mt-4 flex flex-wrap gap-4 text-sm">
+        <div class="mt-4 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm">
             <div class="flex items-center gap-2">
-                <div class="w-3 h-3 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full"></div>
-                <span class="text-gray-300">Progress Trend</span>
+                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span class="text-gray-300">Trend Skoru</span>
             </div>
             <div class="text-gray-400">
-                📈 Yüksek değer = Daha iyi performans
+                📉 Düşen çizgi = Düzenli alışkanlık tekrarı
             </div>
         </div>
     </div>
@@ -211,10 +231,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         maintainAspectRatio: false,
                         plugins: {
                             legend: { 
-                                display: true,
-                                labels: {
-                                    color: 'rgba(255, 255, 255, 0.8)',
-                                    font: { size: 12 }
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#ef4444',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Skor: ' + context.parsed.y;
+                                    }
                                 }
                             }
                         },
@@ -222,13 +251,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             x: {
                                 display: true,
                                 grid: { 
-                                    display: true,
-                                    color: 'rgba(255, 255, 255, 0.1)'
+                                    display: false
                                 },
                                 ticks: {
-                                    color: 'rgba(255, 255, 255, 0.8)',
-                                    font: { size: 11 },
-                                    maxTicksLimit: 10
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    font: { size: window.innerWidth < 640 ? 9 : 11 },
+                                    maxTicksLimit: window.innerWidth < 640 ? 7 : 14
                                 }
                             },
                             y: {
@@ -236,26 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 beginAtZero: true,
                                 grid: { 
                                     display: true,
-                                    color: 'rgba(255, 255, 255, 0.1)'
+                                    color: 'rgba(255, 255, 255, 0.08)'
                                 },
                                 ticks: {
-                                    color: 'rgba(255, 255, 255, 0.8)',
-                                    font: { size: 11 }
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    font: { size: window.innerWidth < 640 ? 9 : 11 },
+                                    stepSize: 1
                                 }
                             }
-                        },
-                        elements: {
-                            point: {
-                                radius: 4,
-                                hoverRadius: 8,
-                                backgroundColor: '#6366f1',
-                                borderColor: '#ffffff',
-                                borderWidth: 2
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
                         }
                     }
                 });
